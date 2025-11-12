@@ -121,7 +121,7 @@ class ZohoCRMService
             throw new Exception('Unsupported HTTP method: ' . $method);
         }
 
-        $client = Http::withHeaders($headers);
+        $client = Http::withHeaders($headers)->timeout(60);
 
         // Make request
         if ($method === 'get' || $method === 'delete') {
@@ -137,7 +137,7 @@ class ZohoCRMService
             $accessToken = $this->getAccessToken();
             $headers['Authorization'] = 'Zoho-oauthtoken ' . $accessToken;
 
-            $client = Http::withHeaders($headers);
+            $client = Http::withHeaders($headers)->timeout(60);
 
             if ($method === 'get' || $method === 'delete') {
                 $response = $client->{$method}($url, $params);
@@ -345,6 +345,58 @@ public function convertLead($leadId, array $conversionData = [])
     }
 
     // ==========================================
+    // TASKS
+    // ==========================================
+
+    /**
+     * Get all tasks
+     */
+    public function getTasks(array $params = [])
+    {
+        $this->ensureFields('Tasks', $params);
+        return $this->apiRequest('GET', '/Tasks', $params);
+    }
+
+    /**
+     * Get specific task by ID
+     */
+    public function getTask($taskId, array $params = [])
+    {
+        $this->ensureFields('Tasks', $params);
+        return $this->apiRequest('GET', "/Tasks/{$taskId}", $params);
+    }
+
+    /**
+     * Create new task
+     */
+    public function createTask(array $data)
+    {
+        $body = [
+            'data' => [$data]
+        ];
+        return $this->apiRequest('POST', '/Tasks', [], $body);
+    }
+
+    /**
+     * Update task
+     */
+    public function updateTask($taskId, array $data)
+    {
+        $body = [
+            'data' => [$data]
+        ];
+        return $this->apiRequest('PUT', "/Tasks/{$taskId}", [], $body);
+    }
+
+    /**
+     * Delete task
+     */
+    public function deleteTask($taskId)
+    {
+        return $this->apiRequest('DELETE', "/Tasks/{$taskId}");
+    }
+
+    // ==========================================
     // DEALS
     // ==========================================
 
@@ -396,60 +448,6 @@ public function convertLead($leadId, array $conversionData = [])
     public function deleteDeal($dealId)
     {
         return $this->apiRequest('DELETE', "/Deals/{$dealId}");
-    }
-
-    // ==========================================
-    // TASKS
-    // ==========================================
-
-    /**
-     * Get all tasks
-     */
-    public function getTasks(array $params = [])
-    {
-        $this->ensureFields('Tasks', $params);
-        return $this->apiRequest('GET', '/Tasks', $params);
-    }
-
-    /**
-     * Get specific task by ID
-     */
-    public function getTask($taskId, array $params = [])
-    {
-        $this->ensureFields('Tasks', $params);
-        return $this->apiRequest('GET', "/Tasks/{$taskId}", $params);
-    }
-
-    /**
-     * Create new task
-     */
-    public function createTask(array $data)
-    {
-        $body = [
-            'data' => [$data]
-        ];
-
-        return $this->apiRequest('POST', '/Tasks', [], $body);
-    }
-
-    /**
-     * Update task
-     */
-    public function updateTask($taskId, array $data)
-    {
-        $body = [
-            'data' => [$data]
-        ];
-
-        return $this->apiRequest('PUT', "/Tasks/{$taskId}", [], $body);
-    }
-
-    /**
-     * Delete task
-     */
-    public function deleteTask($taskId)
-    {
-        return $this->apiRequest('DELETE', "/Tasks/{$taskId}");
     }
 
     // ==========================================
@@ -552,7 +550,7 @@ public function convertLead($leadId, array $conversionData = [])
         return $this->apiRequest('PUT', "/Events/{$eventId}", [], $body);
     }
 
- 
+
 
     // ==========================================
     // NOTES

@@ -50,23 +50,193 @@
                 </div>
                 <!--end::Dashboard-->
 
-                <!--begin::Invoices-->
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}" href="{{ route('invoices.index') }}">
+                <!--begin::Zoho Books Dropdown-->
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->is('invoices*', 'customers*', 'items*', 'payments*', 'estimates*', 'expenses*', 'bills*', 'accounts*') ? 'here show' : '' }}">
+                    <span class="menu-link">
                         <span class="menu-icon">
-                            <i class="ki-duotone ki-bill fs-2">
+                            <i class="ki-duotone ki-book fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                                 <span class="path3"></span>
                                 <span class="path4"></span>
-                                <span class="path5"></span>
-                                <span class="path6"></span>
                             </i>
                         </span>
-                        <span class="menu-title">{{ __('dashboard.invoices') }}</span>
-                    </a>
+                        <span class="menu-title">{{ __('dashboard.zoho_books') }}</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+                    <div class="menu-sub menu-sub-accordion">
+                        <!--begin::Invoices-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}" href="{{ route('invoices.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.invoices') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Invoices-->
+
+                        <!--begin::Customers-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('customers.*') ? 'active' : '' }}" href="{{ route('customers.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.customers') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Customers-->
+
+                        <!--begin::Items-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('items.*') ? 'active' : '' }}" href="{{ route('items.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.items') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Items-->
+
+                        <!--begin::Payments-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('payments.*') ? 'active' : '' }}" href="{{ route('payments.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.payments') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Payments-->
+
+                        <!--begin::Estimates-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('estimates.*') ? 'active' : '' }}" href="{{ route('estimates.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.estimates') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Estimates-->
+
+                        <!--begin::Expenses-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}" href="{{ route('expenses.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.expenses') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Expenses-->
+
+                        <!--begin::Bills-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('bills.*') ? 'active' : '' }}" href="{{ route('bills.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.bills') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Bills-->
+
+                        <!--begin::Accounts-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('accounts.*') ? 'active' : '' }}" href="{{ route('accounts.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.accounts') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Accounts-->
+                    </div>
                 </div>
-                <!--end::Invoices-->
+                <!--end::Zoho Books Dropdown-->
+
+                <!--begin::Zoho CRM Dropdown-->
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->is('crm/*') ? 'here show' : '' }}">
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-abstract-26 fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">{{ __('dashboard.zoho_crm') }}</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+                    <div class="menu-sub menu-sub-accordion">
+                        <!--begin::Leads-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('crm.leads.*') ? 'active' : '' }}" href="{{ route('crm.leads.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.leads') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Leads-->
+
+                        <!--begin::Contacts-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('crm.contacts.*') ? 'active' : '' }}" href="{{ route('crm.contacts.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.contacts') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Contacts-->
+
+                        <!--begin::Deals-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('crm.deals.*') ? 'active' : '' }}" href="{{ route('crm.deals.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.deals') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Deals-->
+
+                        <!--begin::Accounts-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('crm.accounts.*') ? 'active' : '' }}" href="{{ route('crm.accounts.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.accounts') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Accounts-->
+
+                        <!--begin::Tasks-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('crm.tasks.*') ? 'active' : '' }}" href="{{ route('crm.tasks.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.tasks') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Tasks-->
+
+                        <!--begin::Calls-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('crm.calls.*') ? 'active' : '' }}" href="{{ route('crm.calls.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.calls') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Calls-->
+                    </div>
+                </div>
+                <!--end::Zoho CRM Dropdown-->
 
             </div>
             <!--end::Menu-->

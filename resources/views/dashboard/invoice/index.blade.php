@@ -131,6 +131,21 @@
                             </div>
                             <!--end::Menu 1-->
                             <!--end::Filter-->
+                            <!--begin::Sync from Zoho-->
+                            <button type="button" id="sync-invoices-btn" class="btn btn-light-success me-3">
+                                <span class="svg-icon svg-icon-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M14.5 20.7259C14.6 21.2259 14.2 21.826 13.7 21.926C13.2 22.026 12.6 22.0259 12.1 22.0259C9.5 22.0259 6.9 21.0259 5 19.1259C1.4 15.5259 1.09998 9.72592 4.29998 5.82592L5.70001 7.22595C3.30001 10.3259 3.59999 14.8259 6.39999 17.7259C8.19999 19.5259 10.8 20.426 13.4 19.926C13.9 19.826 14.4 20.2259 14.5 20.7259ZM18.4 16.8259L19.8 18.2259C22.9 14.3259 22.7 8.52593 19 4.92593C16.7 2.62593 13.5 1.62594 10.3 2.12594C9.79998 2.22594 9.4 2.72595 9.5 3.22595C9.6 3.72595 10.1 4.12594 10.6 4.02594C13.1 3.62594 15.7 4.42595 17.6 6.22595C20.5 9.22595 20.7 13.7259 18.4 16.8259Z" fill="currentColor"/>
+                                        <path opacity="0.3" d="M2 3.62592H7C7.6 3.62592 8 4.02592 8 4.62592V9.62589L2 3.62592ZM16 14.4259V19.4259C16 20.0259 16.4 20.4259 17 20.4259H22L16 14.4259Z" fill="currentColor"/>
+                                    </svg>
+                                </span>
+                                <span class="indicator-label">{{ __('dashboard.sync_from_zoho') }}</span>
+                                <span class="indicator-progress" style="display: none;">
+                                    {{ __('dashboard.syncing') }}...
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+                            <!--end::Sync from Zoho-->
                             <!--begin::Add invoice-->
                             <a href="{{ route('invoices.create') }}" class="btn btn-primary">
                                 <span class="svg-icon svg-icon-2">
@@ -661,6 +676,202 @@ document.addEventListener('DOMContentLoaded', function() {
     // Re-initialize KTMenu for dropdown menus
     if (typeof KTMenu !== 'undefined') {
         KTMenu.createInstances();
+    }
+
+    // Sync invoices from Zoho Books
+    const syncBtn = document.getElementById('sync-invoices-btn');
+    if (syncBtn) {
+        syncBtn.addEventListener('click', function() {
+            // Show confirmation dialog
+            Swal.fire({
+                title: '{{ __("dashboard.sync_invoices") }}',
+                text: '{{ __("dashboard.sync_invoices_confirmation") }}',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '{{ __("dashboard.yes") }}',
+                cancelButtonText: '{{ __("dashboard.cancel") }}',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: "btn btn-light"
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading state
+                    const indicatorLabel = this.querySelector('.indicator-label');
+                    const indicatorProgress = this.querySelector('.indicator-progress');
+
+                    indicatorLabel.style.display = 'none';
+                    indicatorProgress.style.display = 'inline-block';
+                    this.disabled = true;
+
+                    // Send sync request without timeout (unlimited time)
+                    console.log('Starting sync request...');
+
+                    // Get fresh CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    console.log('CSRF Token:', csrfToken ? 'Found' : 'Not found');
+
+                    if (!csrfToken) {
+                        Swal.fire({
+                            text: "{{ __('dashboard.csrf_token_missing') }}",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "{{ __('dashboard.ok') }}",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
+                        return;
+                    }
+
+                    fetch('{{ route("invoices.sync") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        console.log('Response received:', response);
+                        console.log('Response status:', response.status);
+                        console.log('Response ok:', response.ok);
+
+                        // Handle CSRF token mismatch (419)
+                        if (response.status === 419) {
+                            return response.json().then(data => {
+                                console.error('CSRF token mismatch');
+                                throw new Error('CSRF_TOKEN_MISMATCH');
+                            }).catch(() => {
+                                throw new Error('CSRF_TOKEN_MISMATCH');
+                            });
+                        }
+
+                        if (!response.ok) {
+                            return response.text().then(text => {
+                                console.error('Error response body:', text);
+                                throw new Error('HTTP_ERROR_' + response.status);
+                            });
+                        }
+
+                        // Try to parse as JSON
+                        return response.text().then(text => {
+                            console.log('Response text:', text.substring(0, 200));
+                            try {
+                                return JSON.parse(text);
+                            } catch (e) {
+                                console.error('Failed to parse JSON:', e);
+                                console.error('Response was:', text.substring(0, 500));
+                                throw new Error('INVALID_JSON_RESPONSE');
+                            }
+                        });
+                    })
+                    .then(data => {
+                        console.log('Response data:', data);
+
+                        // Reset button state
+                        indicatorLabel.style.display = 'inline-block';
+                        indicatorProgress.style.display = 'none';
+                        this.disabled = false;
+
+                        if (data.success) {
+                            console.log('Sync successful!');
+                            // Show success message and reload immediately
+                            Swal.fire({
+                                title: '{{ __("dashboard.success") }}',
+                                text: data.message,
+                                icon: "success",
+                                showConfirmButton: true,
+                                confirmButtonText: '{{ __("dashboard.ok") }}',
+                                buttonsStyling: false,
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            }).then(() => {
+                                // Reload page
+                                location.reload();
+                            });
+                        } else {
+                            console.error('Sync failed:', data.message);
+                            // Show error message
+                            Swal.fire({
+                                text: data.message || "{{ __('dashboard.error_syncing_invoices') }}",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "{{ __('dashboard.ok') }}",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Sync error caught:', error);
+                        console.error('Error name:', error.name);
+                        console.error('Error message:', error.message);
+                        console.error('Error stack:', error.stack);
+
+                        // Reset button state
+                        indicatorLabel.style.display = 'inline-block';
+                        indicatorProgress.style.display = 'none';
+                        this.disabled = false;
+
+                        // Handle different error types
+                        if (error.message === 'CSRF_TOKEN_MISMATCH') {
+                            Swal.fire({
+                                title: "{{ __('dashboard.session_expired') }}",
+                                text: "{{ __('dashboard.session_expired_message') }}",
+                                icon: "warning",
+                                buttonsStyling: false,
+                                confirmButtonText: "{{ __('dashboard.refresh_page') }}",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else if (error.message === 'INVALID_JSON_RESPONSE') {
+                            Swal.fire({
+                                title: "{{ __('dashboard.error') }}",
+                                html: "{{ __('dashboard.server_error_message') }}<br><small>{{ __('dashboard.check_logs') }}</small>",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "{{ __('dashboard.ok') }}",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            });
+                        } else if (error.message.startsWith('HTTP_ERROR_')) {
+                            const statusCode = error.message.replace('HTTP_ERROR_', '');
+                            Swal.fire({
+                                title: "{{ __('dashboard.error') }}",
+                                text: "{{ __('dashboard.http_error') }} " + statusCode,
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "{{ __('dashboard.ok') }}",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "{{ __('dashboard.error') }}",
+                                text: "{{ __('dashboard.error_syncing_invoices') }}",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "{{ __('dashboard.ok') }}",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
     }
 });
 </script>

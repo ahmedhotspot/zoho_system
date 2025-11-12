@@ -297,6 +297,11 @@ public function sendInvoice($invoiceId, array $emailData = [])
         return $this->apiRequest('GET', '/estimates', $params);
     }
 
+    public function getEstimate(string $estimateId)
+    {
+        return $this->apiRequest('GET', "/estimates/{$estimateId}");
+    }
+
     public function createEstimate(array $data)
     {
         $body = [
@@ -315,6 +320,11 @@ public function sendInvoice($invoiceId, array $emailData = [])
         return $this->apiRequest('PUT', "/estimates/{$estimateId}", [], $body);
     }
 
+    public function deleteEstimate(string $estimateId)
+    {
+        return $this->apiRequest('DELETE', "/estimates/{$estimateId}");
+    }
+
     // ==========================================
     // BILLS
     // ==========================================
@@ -324,6 +334,11 @@ public function sendInvoice($invoiceId, array $emailData = [])
         return $this->apiRequest('GET', '/bills', $params);
     }
 
+    public function getBill(string $billId)
+    {
+        return $this->apiRequest('GET', "/bills/{$billId}");
+    }
+
     public function createBill(array $data)
     {
         $body = [
@@ -331,6 +346,19 @@ public function sendInvoice($invoiceId, array $emailData = [])
         ];
 
         return $this->apiRequest('POST', '/bills', [], $body);
+    }
+
+    public function updateBill($billId, array $data)
+    {
+        $body = [
+            'JSONString' => json_encode($data)
+        ];
+        return $this->apiRequest('PUT', "/bills/{$billId}", [], $body);
+    }
+
+    public function deleteBill(string $billId)
+    {
+        return $this->apiRequest('DELETE', "/bills/{$billId}");
     }
 
 
@@ -374,6 +402,11 @@ public function getExpenseAccounts()
         return $this->apiRequest('GET', '/expenses', $params);
     }
 
+    public function getExpense(string $expenseId)
+    {
+        return $this->apiRequest('GET', "/expenses/{$expenseId}");
+    }
+
     public function createExpense(array $data)
     {
         $body = [
@@ -381,6 +414,19 @@ public function getExpenseAccounts()
         ];
 
         return $this->apiRequest('POST', '/expenses', [], $body);
+    }
+
+    public function updateExpense($expenseId, array $data)
+    {
+        $body = [
+            'JSONString' => json_encode($data)
+        ];
+        return $this->apiRequest('PUT', "/expenses/{$expenseId}", [], $body);
+    }
+
+    public function deleteExpense(string $expenseId)
+    {
+        return $this->apiRequest('DELETE', "/expenses/{$expenseId}");
     }
 
     // ==========================================
@@ -399,5 +445,46 @@ public function getExpenseAccounts()
         ];
 
         return $this->apiRequest('POST', '/customerpayments', [], $body);
+    }
+
+    public function deletePayment(string $paymentId)
+    {
+        return $this->apiRequest('DELETE', "/customerpayments/{$paymentId}");
+    }
+
+    // ========================================
+    // Contact Methods (Customers/Vendors)
+    // ========================================
+
+    /**
+     * Create a new contact (customer/vendor)
+     */
+    public function createContact(array $data)
+    {
+        $body = [
+            'JSONString' => json_encode($data)
+        ];
+
+        return $this->apiRequest('POST', '/contacts', [], $body);
+    }
+
+    /**
+     * Update a contact
+     */
+    public function updateContact(string $contactId, array $data)
+    {
+        $body = [
+            'JSONString' => json_encode($data)
+        ];
+
+        return $this->apiRequest('PUT', "/contacts/{$contactId}", [], $body);
+    }
+
+    /**
+     * Delete a contact
+     */
+    public function deleteContact(string $contactId)
+    {
+        return $this->apiRequest('DELETE', "/contacts/{$contactId}");
     }
 }
