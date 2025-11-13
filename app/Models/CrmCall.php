@@ -33,6 +33,7 @@ class CrmCall extends Model
         'dialled_number',
         'zoho_created_time',
         'zoho_modified_time',
+        'synced_to_zoho',
         'last_synced_at',
     ];
 

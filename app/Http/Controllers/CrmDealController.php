@@ -41,6 +41,23 @@ class CrmDealController extends Controller
 
         $deals = $query->latest()->paginate(20);
 
+        // Return JSON for AJAX requests
+        if ($request->ajax() || $request->has('ajax')) {
+            return response()->json([
+                'data' => $deals->map(function($deal) {
+                    return [
+                        'id' => $deal->id,
+                        'zoho_id' => $deal->zoho_deal_id,
+                        'deal_name' => $deal->deal_name,
+                        'amount' => $deal->amount,
+                        'stage' => $deal->stage,
+                        'account_name' => $deal->account_name,
+                        'closing_date' => $deal->closing_date,
+                    ];
+                })
+            ]);
+        }
+
         return view('dashboard.crm.deal.index', compact('deals'));
     }
 

@@ -59,6 +59,24 @@ class CrmContactController extends Controller
 
         $contacts = $query->latest()->paginate(20);
 
+        // Return JSON for AJAX requests
+        if ($request->ajax() || $request->has('ajax')) {
+            return response()->json([
+                'data' => $contacts->map(function($contact) {
+                    return [
+                        'id' => $contact->id,
+                        'zoho_id' => $contact->zoho_contact_id,
+                        'full_name' => $contact->full_name,
+                        'first_name' => $contact->first_name,
+                        'last_name' => $contact->last_name,
+                        'account_name' => $contact->account_name,
+                        'email' => $contact->email,
+                        'phone' => $contact->phone,
+                    ];
+                })
+            ]);
+        }
+
         return view('dashboard.crm.contact.index', compact('contacts'));
     }
 

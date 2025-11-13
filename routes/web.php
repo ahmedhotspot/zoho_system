@@ -223,4 +223,33 @@ Route::prefix('crm/calls')->name('crm.calls.')->middleware('auth')->group(functi
     Route::post('/sync', [App\Http\Controllers\CrmCallController::class, 'sync'])->name('sync');
 });
 
+// CRM Events Routes
+Route::prefix('crm/events')->name('crm.events.')->middleware('auth')->group(function () {
+    Route::get('/', [App\Http\Controllers\CrmEventController::class, 'index'])->name('index');
+    Route::get('/create', [App\Http\Controllers\CrmEventController::class, 'create'])->name('create');
+    Route::post('/', [App\Http\Controllers\CrmEventController::class, 'store'])->name('store');
+    Route::get('/{event}', [App\Http\Controllers\CrmEventController::class, 'show'])->name('show');
+    Route::get('/{event}/edit', [App\Http\Controllers\CrmEventController::class, 'edit'])->name('edit');
+    Route::put('/{event}', [App\Http\Controllers\CrmEventController::class, 'update'])->name('update');
+    Route::delete('/{event}', [App\Http\Controllers\CrmEventController::class, 'destroy'])->name('destroy');
+
+    // Sync events from Zoho CRM
+    Route::post('/sync', [App\Http\Controllers\CrmEventController::class, 'sync'])->name('sync');
+});
+
+// CRM Notes Routes
+Route::prefix('crm/notes')->name('crm.notes.')->middleware('auth')->group(function () {
+    Route::get('/', [App\Http\Controllers\CrmNoteController::class, 'index'])->name('index');
+    Route::get('/create', [App\Http\Controllers\CrmNoteController::class, 'create'])->name('create');
+    Route::post('/', [App\Http\Controllers\CrmNoteController::class, 'store'])->name('store');
+    Route::get('/{note}', [App\Http\Controllers\CrmNoteController::class, 'show'])->name('show');
+    Route::get('/{note}/edit', [App\Http\Controllers\CrmNoteController::class, 'edit'])->name('edit');
+    Route::put('/{note}', [App\Http\Controllers\CrmNoteController::class, 'update'])->name('update');
+    Route::delete('/{note}', [App\Http\Controllers\CrmNoteController::class, 'destroy'])->name('destroy');
+
+    // Sync notes from Zoho CRM
+    Route::post('/sync', [App\Http\Controllers\CrmNoteController::class, 'sync'])->name('sync');
+});
+
+
 });

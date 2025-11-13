@@ -36,15 +36,33 @@ class SyncAccountsFromZohoCRM implements ShouldQueue
         Log::info('Starting accounts synchronization from Zoho CRM...');
 
         try {
+            // Get last sync time
+            $lastSyncTime = CrmAccount::max('last_synced_at');
+
+            if ($lastSyncTime) {
+                Log::info("Syncing accounts modified after: {$lastSyncTime}");
+            } else {
+                Log::info("First sync - fetching all accounts");
+            }
+
             $page = 1;
             $perPage = 200;
             $hasMorePages = true;
 
             while ($hasMorePages) {
-                $response = $this->crm->getAccounts([
+                $params = [
                     'page' => $page,
                     'per_page' => $perPage,
-                ]);
+                    'sort_by' => 'Modified_Time',
+                    'sort_order' => 'desc',
+                ];
+
+                // Add If-Modified-Since header if we have a last sync time
+                if ($lastSyncTime) {
+                    $params['modified_since'] = $lastSyncTime;
+                }
+
+                $response = $this->crm->getAccounts($params);
 
                 $zohoAccounts = $response['data'] ?? [];
                 $info = $response['info'] ?? [];

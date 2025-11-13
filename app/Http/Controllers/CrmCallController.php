@@ -6,6 +6,7 @@ use App\Jobs\SyncCallsFromZohoCRM;
 use App\Models\CrmCall;
 use App\Services\ZohoCRMService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CrmCallController extends Controller
@@ -63,50 +64,87 @@ class CrmCallController extends Controller
             'call_start_time' => 'nullable|date',
             'call_duration' => 'nullable|string',
             'call_result' => 'nullable|string',
+            'call_purpose' => 'nullable|string',
             'description' => 'nullable|string',
+            'related_to_type' => 'nullable|string|in:Leads,Contacts,Deals,Accounts',
+            'related_to_id' => 'nullable|string',
         ]);
 
+        DB::beginTransaction();
+
         try {
-            // Create in Zoho CRM first
+            // Prepare data for Zoho CRM
             $zohoData = [
                 'Subject' => $validated['subject'],
             ];
 
+            // Add Call_Start_Time if provided
+            // Zoho expects format: yyyy-MM-dd'T'HH:mm:ss+HH:mm or yyyy-MM-dd'T'HH:mm:ss.SSSZ
+            if (!empty($validated['call_start_time'])) {
+                try {
+                    $dateTime = new \DateTime($validated['call_start_time']);
+                    // Try ISO 8601 format with timezone
+                    $zohoData['Call_Start_Time'] = $dateTime->format('c'); // ISO 8601: 2025-11-12T18:30:00+03:00
+                } catch (\Exception $e) {
+                    Log::warning('Invalid call_start_time format: ' . $validated['call_start_time']);
+                }
+            }
+
+            // Add optional fields
             if (!empty($validated['call_type'])) {
                 $zohoData['Call_Type'] = $validated['call_type'];
             }
-            if (!empty($validated['call_start_time'])) {
-                // Convert to Zoho CRM datetime format: YYYY-MM-DDTHH:MM:SS (without timezone)
-                $dt = new \DateTime($validated['call_start_time']);
-                $zohoData['Call_Start_Time'] = $dt->format('Y-m-d\TH:i:s');
-            }
             if (!empty($validated['call_duration'])) {
+                // Duration should be in minutes (integer or string like "30")
                 $zohoData['Call_Duration'] = $validated['call_duration'];
             }
             if (!empty($validated['call_result'])) {
                 $zohoData['Call_Result'] = $validated['call_result'];
             }
+            if (!empty($validated['call_purpose'])) {
+                $zohoData['Call_Purpose'] = $validated['call_purpose'];
+            }
             if (!empty($validated['description'])) {
                 $zohoData['Description'] = $validated['description'];
             }
 
-            $response = $this->crm->createCall($zohoData);
-
-            if (isset($response['data'][0]['details']['id'])) {
-                $zohoCallId = $response['data'][0]['details']['id'];
-
-                // Create in local database
-                $validated['zoho_call_id'] = $zohoCallId;
-                $validated['last_synced_at'] = now();
-                CrmCall::create($validated);
-
-                return redirect()->route('crm.calls.index')
-                    ->with('success', __('dashboard.call_created_successfully'));
+            // Add related record if provided
+            if (!empty($validated['related_to_type']) && !empty($validated['related_to_id'])) {
+                $zohoData['What_Id'] = $validated['related_to_id'];
             }
 
-            throw new \Exception('Failed to get Zoho call ID from response');
+            // Create in Zoho CRM first
+            $zohoResponse = $this->crm->createCall($zohoData);
+
+            if (isset($zohoResponse['data'][0]['details']['id'])) {
+                $zohoCallId = $zohoResponse['data'][0]['details']['id'];
+
+                // Save to local database
+                $call = CrmCall::create([
+                    'zoho_call_id' => $zohoCallId,
+                    'subject' => $validated['subject'],
+                    'call_type' => $validated['call_type'] ?? null,
+                    'call_start_time' => $validated['call_start_time'] ?? null,
+                    'call_duration' => $validated['call_duration'] ?? null,
+                    'call_result' => $validated['call_result'] ?? null,
+                    'call_purpose' => $validated['call_purpose'] ?? null,
+                    'description' => $validated['description'] ?? null,
+                    'related_to_type' => $validated['related_to_type'] ?? null,
+                    'related_to_id' => $validated['related_to_id'] ?? null,
+                    'synced_to_zoho' => true,
+                    'last_synced_at' => now(),
+                ]);
+
+                DB::commit();
+
+                return redirect()->route('crm.calls.show', $call)
+                    ->with('success', __('dashboard.call_created_successfully'));
+            } else {
+                throw new \Exception('Failed to create call in Zoho CRM: ' . json_encode($zohoResponse));
+            }
 
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error creating call: ' . $e->getMessage());
             return back()->withInput()
                 ->with('error', __('dashboard.error_creating_call') . ': ' . $e->getMessage());
@@ -140,45 +178,82 @@ class CrmCallController extends Controller
             'call_start_time' => 'nullable|date',
             'call_duration' => 'nullable|string',
             'call_result' => 'nullable|string',
+            'call_purpose' => 'nullable|string',
             'description' => 'nullable|string',
+            'related_to_type' => 'nullable|string|in:Leads,Contacts,Deals,Accounts',
+            'related_to_id' => 'nullable|string',
         ]);
 
+        DB::beginTransaction();
+
         try {
-            // Update in Zoho CRM if synced
+            // Update in Zoho CRM if call has zoho_call_id
             if ($call->zoho_call_id) {
+                // Prepare data for Zoho CRM
                 $zohoData = [
                     'Subject' => $validated['subject'],
                 ];
 
+                // Add Call_Start_Time if provided
+                // Zoho expects format: yyyy-MM-dd'T'HH:mm:ss+HH:mm or yyyy-MM-dd'T'HH:mm:ss.SSSZ
+                if (!empty($validated['call_start_time'])) {
+                    try {
+                        $dateTime = new \DateTime($validated['call_start_time']);
+                        // Try ISO 8601 format with timezone
+                        $zohoData['Call_Start_Time'] = $dateTime->format('c'); // ISO 8601: 2025-11-12T18:30:00+03:00
+                    } catch (\Exception $e) {
+                        Log::warning('Invalid call_start_time format: ' . $validated['call_start_time']);
+                    }
+                }
+
+                // Add optional fields
                 if (!empty($validated['call_type'])) {
                     $zohoData['Call_Type'] = $validated['call_type'];
                 }
-                if (!empty($validated['call_start_time'])) {
-                    // Convert to Zoho CRM datetime format: YYYY-MM-DDTHH:MM:SS (without timezone)
-                    $dt = new \DateTime($validated['call_start_time']);
-                    $zohoData['Call_Start_Time'] = $dt->format('Y-m-d\TH:i:s');
-                }
                 if (!empty($validated['call_duration'])) {
+                    // Duration should be in minutes (integer or string like "30")
                     $zohoData['Call_Duration'] = $validated['call_duration'];
                 }
                 if (!empty($validated['call_result'])) {
                     $zohoData['Call_Result'] = $validated['call_result'];
                 }
+                if (!empty($validated['call_purpose'])) {
+                    $zohoData['Call_Purpose'] = $validated['call_purpose'];
+                }
                 if (!empty($validated['description'])) {
                     $zohoData['Description'] = $validated['description'];
                 }
 
+                // Add related record if provided
+                if (!empty($validated['related_to_type']) && !empty($validated['related_to_id'])) {
+                    $zohoData['What_Id'] = $validated['related_to_id'];
+                }
+
+                // Update in Zoho CRM
                 $this->crm->updateCall($call->zoho_call_id, $zohoData);
-                $validated['last_synced_at'] = now();
             }
 
             // Update in local database
-            $call->update($validated);
+            $call->update([
+                'subject' => $validated['subject'],
+                'call_type' => $validated['call_type'] ?? null,
+                'call_start_time' => $validated['call_start_time'] ?? null,
+                'call_duration' => $validated['call_duration'] ?? null,
+                'call_result' => $validated['call_result'] ?? null,
+                'call_purpose' => $validated['call_purpose'] ?? null,
+                'description' => $validated['description'] ?? null,
+                'related_to_type' => $validated['related_to_type'] ?? null,
+                'related_to_id' => $validated['related_to_id'] ?? null,
+                'last_synced_at' => now(),
+            ]);
 
-            return redirect()->route('crm.calls.index')
+            DB::commit();
+
+            return redirect()->route('crm.calls.show', $call)
                 ->with('success', __('dashboard.call_updated_successfully'));
 
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error updating call: ' . $e->getMessage());
             return back()->withInput()
                 ->with('error', __('dashboard.error_updating_call') . ': ' . $e->getMessage());
@@ -190,8 +265,10 @@ class CrmCallController extends Controller
      */
     public function destroy(CrmCall $call)
     {
+        DB::beginTransaction();
+
         try {
-            // Delete from Zoho CRM if synced
+            // Delete from Zoho CRM if call has zoho_call_id
             if ($call->zoho_call_id) {
                 $this->crm->deleteCall($call->zoho_call_id);
             }
@@ -199,10 +276,13 @@ class CrmCallController extends Controller
             // Delete from local database
             $call->delete();
 
+            DB::commit();
+
             return redirect()->route('crm.calls.index')
                 ->with('success', __('dashboard.call_deleted_successfully'));
 
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error deleting call: ' . $e->getMessage());
             return back()->with('error', __('dashboard.error_deleting_call') . ': ' . $e->getMessage());
         }

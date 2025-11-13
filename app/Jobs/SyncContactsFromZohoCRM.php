@@ -36,15 +36,33 @@ class SyncContactsFromZohoCRM implements ShouldQueue
         Log::info('Starting contacts synchronization from Zoho CRM...');
 
         try {
+            // Get last sync time
+            $lastSyncTime = CrmContact::max('last_synced_at');
+
+            if ($lastSyncTime) {
+                Log::info("Syncing contacts modified after: {$lastSyncTime}");
+            } else {
+                Log::info("First sync - fetching all contacts");
+            }
+
             $page = 1;
             $perPage = 200;
             $hasMorePages = true;
 
             while ($hasMorePages) {
-                $response = $this->crm->getContacts([
+                $params = [
                     'page' => $page,
                     'per_page' => $perPage,
-                ]);
+                    'sort_by' => 'Modified_Time',
+                    'sort_order' => 'desc',
+                ];
+
+                // Add If-Modified-Since header if we have a last sync time
+                if ($lastSyncTime) {
+                    $params['modified_since'] = $lastSyncTime;
+                }
+
+                $response = $this->crm->getContacts($params);
 
                 $zohoContacts = $response['data'] ?? [];
                 $info = $response['info'] ?? [];

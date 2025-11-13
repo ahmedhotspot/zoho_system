@@ -46,6 +46,23 @@ class CrmAccountController extends Controller
 
         $accounts = $query->latest()->paginate(20);
 
+        // Return JSON for AJAX requests
+        if ($request->ajax() || $request->has('ajax')) {
+            return response()->json([
+                'data' => $accounts->map(function($account) {
+                    return [
+                        'id' => $account->id,
+                        'zoho_id' => $account->zoho_account_id,
+                        'account_name' => $account->account_name,
+                        'account_type' => $account->account_type,
+                        'industry' => $account->industry,
+                        'phone' => $account->phone,
+                        'website' => $account->website,
+                    ];
+                })
+            ]);
+        }
+
         return view('dashboard.crm.account.index', compact('accounts'));
     }
 

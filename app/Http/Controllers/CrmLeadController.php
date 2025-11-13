@@ -48,6 +48,24 @@ class CrmLeadController extends Controller
 
         $leads = $query->orderBy('created_at', 'desc')->paginate(15);
 
+        // Return JSON for AJAX requests
+        if ($request->ajax() || $request->has('ajax')) {
+            return response()->json([
+                'data' => $leads->map(function($lead) {
+                    return [
+                        'id' => $lead->id,
+                        'zoho_id' => $lead->zoho_lead_id,
+                        'full_name' => $lead->full_name,
+                        'first_name' => $lead->first_name,
+                        'last_name' => $lead->last_name,
+                        'company' => $lead->company,
+                        'email' => $lead->email,
+                        'phone' => $lead->phone,
+                    ];
+                })
+            ]);
+        }
+
         return view('dashboard.crm.lead.index', compact('leads'));
     }
 

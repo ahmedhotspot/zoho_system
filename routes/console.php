@@ -193,3 +193,29 @@ Schedule::command('invoices:sync --queue')
         ->onFailure(function () {
             logger()->error('CRM Calls sync schedule failed');
         });
+
+    // Schedule events sync from Zoho CRM every day at 12:00 AM
+    Schedule::command('crm:sync-events')
+        ->dailyAt('23:46')
+        ->timezone('Asia/Riyadh')
+        ->name('sync-events-from-zoho-crm')
+        ->withoutOverlapping()
+        ->onSuccess(function () {
+            info('CRM Events sync scheduled successfully');
+        })
+        ->onFailure(function () {
+            logger()->error('CRM Events sync schedule failed');
+        });
+
+    // Schedule notes sync from Zoho CRM every day at 12:00 AM
+    Schedule::command('crm:sync-notes')
+        ->dailyAt('23:45')
+        ->timezone('Asia/Riyadh')
+        ->name('sync-notes-from-zoho-crm')
+        ->withoutOverlapping()
+        ->onSuccess(function () {
+            info('CRM Notes sync scheduled successfully');
+        })
+        ->onFailure(function () {
+            logger()->error('CRM Notes sync schedule failed');
+        });

@@ -36,15 +36,33 @@ class SyncLeadsFromZohoCRM implements ShouldQueue
         Log::info('Starting leads synchronization from Zoho CRM...');
 
         try {
+            // Get last sync time
+            $lastSyncTime = CrmLead::max('last_synced_at');
+
+            if ($lastSyncTime) {
+                Log::info("Syncing leads modified after: {$lastSyncTime}");
+            } else {
+                Log::info("First sync - fetching all leads");
+            }
+
             $page = 1;
             $perPage = 200;
             $hasMorePages = true;
 
             while ($hasMorePages) {
-                $response = $this->crm->getLeads([
+                $params = [
                     'page' => $page,
                     'per_page' => $perPage,
-                ]);
+                    'sort_by' => 'Modified_Time',
+                    'sort_order' => 'desc',
+                ];
+
+                // Add If-Modified-Since header if we have a last sync time
+                if ($lastSyncTime) {
+                    $params['modified_since'] = $lastSyncTime;
+                }
+
+                $response = $this->crm->getLeads($params);
 
                 $zohoLeads = $response['data'] ?? [];
                 $info = $response['info'] ?? [];

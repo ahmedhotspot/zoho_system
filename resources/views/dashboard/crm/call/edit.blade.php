@@ -99,11 +99,33 @@
 
                     <div class="card-footer d-flex justify-content-end py-6 px-9">
                         <a href="{{ route('crm.calls.index') }}" class="btn btn-light btn-active-light-primary me-2">{{ __('dashboard.cancel') }}</a>
-                        <button type="submit" class="btn btn-primary">{{ __('dashboard.save') }}</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <span class="indicator-label">{{ __('dashboard.save') }}</span>
+                            <span class="indicator-progress" style="display: none;">
+                                {{ __('dashboard.please_wait') }}...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', function(e) {
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.querySelector('.indicator-label').style.display = 'none';
+            submitBtn.querySelector('.indicator-progress').style.display = 'inline-block';
+        });
+    });
+</script>
+@endpush
 

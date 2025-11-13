@@ -36,15 +36,33 @@ class SyncDealsFromZohoCRM implements ShouldQueue
         Log::info('Starting deals synchronization from Zoho CRM...');
 
         try {
+            // Get last sync time
+            $lastSyncTime = CrmDeal::max('last_synced_at');
+
+            if ($lastSyncTime) {
+                Log::info("Syncing deals modified after: {$lastSyncTime}");
+            } else {
+                Log::info("First sync - fetching all deals");
+            }
+
             $page = 1;
             $perPage = 200;
             $hasMorePages = true;
 
             while ($hasMorePages) {
-                $response = $this->crm->getDeals([
+                $params = [
                     'page' => $page,
                     'per_page' => $perPage,
-                ]);
+                    'sort_by' => 'Modified_Time',
+                    'sort_order' => 'desc',
+                ];
+
+                // Add If-Modified-Since header if we have a last sync time
+                if ($lastSyncTime) {
+                    $params['modified_since'] = $lastSyncTime;
+                }
+
+                $response = $this->crm->getDeals($params);
 
                 $zohoDeals = $response['data'] ?? [];
                 $info = $response['info'] ?? [];

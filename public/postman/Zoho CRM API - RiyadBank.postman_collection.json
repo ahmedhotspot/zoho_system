@@ -1,0 +1,1485 @@
+{
+	"info": {
+		"_postman_id": "b7bd598f-7486-4736-a127-654b30386dd3",
+		"name": "Zoho CRM API - RiyadBank",
+		"description": "Complete Postman Collection for Zoho CRM API endpoints in RiyadBank project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49093869",
+		"_collection_link": "https://omarmatter90-1464654.postman.co/workspace/omarmatter90's-Workspace~24b4692b-7a16-40e8-89a9-c66832f6c868/collection/49093869-b7bd598f-7486-4736-a127-654b30386dd3?action=share&source=collection_link&creator=49093869"
+	},
+	"item": [
+		{
+			"name": "Leads",
+			"item": [
+				{
+					"name": "Get All Leads",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/leads?page=1&per_page=25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"leads"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								},
+								{
+									"key": "per_page",
+									"value": "25",
+									"description": "Records per page"
+								},
+								{
+									"key": "fields",
+									"value": "",
+									"description": "Comma separated field names",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all leads from Zoho CRM with pagination support"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Lead by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/leads/{{lead_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"leads",
+								"{{lead_id}}"
+							]
+						},
+						"description": "Get a specific lead by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Lead",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Last_Name\": \"omar\",\n  \"First_Name\": \"matter\",\n  \"Company\": \"hotspots\",\n  \"Email\": \"omarmatter2001@gmail.com\",\n  \"Phone\": \"+972598804144\",\n  \"Lead_Source\": \"Website\",\n  \"Lead_Status\": \"Not Contacted\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/leads",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"leads"
+							]
+						},
+						"description": "Create a new lead in Zoho CRM"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Lead",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Last_Name\": \"أحمد المحدث\",\n  \"First_Name\": \"محمد\",\n  \"Email\": \"ahmed.updated@riyadh.com\",\n  \"Phone\": \"+966509876543\",\n  \"Lead_Status\": \"Contacted\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/leads/5866617000003497001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"leads",
+								"5866617000003497001"
+							]
+						},
+						"description": "Update an existing lead"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Lead",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/leads/{{lead_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"leads",
+								"{{lead_id}}"
+							]
+						},
+						"description": "Delete a lead from Zoho CRM"
+					},
+					"response": []
+				},
+				{
+					"name": "Convert Lead",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"overwrite\": true,\n  \"notify_lead_owner\": true,\n  \"notify_new_entity_owner\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/leads/{{lead_id}}/convert",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"leads",
+								"{{lead_id}}",
+								"convert"
+							]
+						},
+						"description": "Convert a lead to Contact, Account, and Deal"
+					},
+					"response": []
+				}
+			],
+			"description": "Lead management endpoints"
+		},
+		{
+			"name": "Contacts",
+			"item": [
+				{
+					"name": "Get All Contacts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/contacts?page=1&per_page=25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contacts"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "25"
+								}
+							]
+						},
+						"description": "Get all contacts from Zoho CRM"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Last_Name\": \"omar\",\n  \"First_Name\": \"matter\",\n  \"Email\": \"omar@example.com\",\n  \"Phone\": \"+9728804144\",\n  \"Account_Name\": \"Hotspots\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/contacts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contacts"
+							]
+						},
+						"description": "Create a new contact in Zoho CRM"
+					},
+					"response": []
+				}
+			],
+			"description": "Contact management endpoints"
+		},
+		{
+			"name": "Accounts",
+			"item": [
+				{
+					"name": "Get All Accounts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/accounts?page=1&per_page=25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "25"
+								}
+							]
+						},
+						"description": "Get all accounts from Zoho CRM"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Account_Name\": \"Hotspots Company\",\n  \"Phone\": \"+9728804144\",\n  \"Website\": \"https://hotspotes.com\",\n  \"Account_Type\": \"Customer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/accounts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts"
+							]
+						},
+						"description": "Create a new account in Zoho CRM"
+					},
+					"response": []
+				}
+			],
+			"description": "Account management endpoints"
+		},
+		{
+			"name": "Deals",
+			"item": [
+				{
+					"name": "Get All Deals",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/deals?page=1&per_page=25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deals"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "25"
+								}
+							]
+						},
+						"description": "Get all deals from Zoho CRM"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Deal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n    \"Deal_Name\": \"Enterprise Software License\",\n    \"Stage\": \"Qualification\",\n    \"Closing_Date\": \"2025-12-31\",\n    \"Amount\": 50000,\n    \"Account_Name\": {\n        \"id\": \"5866617000003500001\"\n    },\n    \"Contact_Name\": {\n        \"id\": \"5866617000003497006\"\n    },\n    \"Type\": \"New Business\",\n    \"Lead_Source\": \"Partner Referral\",\n    \"Probability\": 60,\n    \"Next_Step\": \"Schedule demo\",\n    \"Description\": \"Annual license for 100 users\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/deals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deals"
+							]
+						},
+						"description": "Create a new deal in Zoho CRM"
+					},
+					"response": []
+				}
+			],
+			"description": "Deal management endpoints"
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Get All Tasks",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tasks?page=1&per_page=25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "25"
+								}
+							]
+						},
+						"description": "جلب جميع المهام من Zoho CRM"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Task by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tasks/5866617000000645100",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"5866617000000645100"
+							]
+						},
+						"description": "جلب مهمة محددة بواسطة ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Subject\": \"Test tasks\",\n  \"Status\": \"Not Started\",\n  \"Priority\": \"High\",\n  \"Due_Date\": \"2025-12-31\",\n  \"Description\": \"do tasks\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tasks",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks"
+							]
+						},
+						"description": "إنشاء مهمة جديدة"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Status\": \"In Progress\",\n  \"Priority\": \"Medium\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tasks/5866617000003507001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"5866617000003507001"
+							]
+						},
+						"description": "تحديث مهمة موجودة"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Task",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tasks/5866617000003507001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"5866617000003507001"
+							]
+						},
+						"description": "حذف مهمة"
+					},
+					"response": []
+				}
+			],
+			"description": "إدارة المهام في Zoho CRM"
+		},
+		{
+			"name": "Calls",
+			"item": [
+				{
+					"name": "Get All Calls",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/calls?page=1&per_page=25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"calls"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "25"
+								}
+							]
+						},
+						"description": "جلب جميع المكالمات"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Call by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/calls/5866617000003509004",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"calls",
+								"5866617000003509004"
+							]
+						},
+						"description": "جلب مكالمة محددة"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Call",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Subject\": \"call with omar\",\n  \"Call_Type\": \"Outbound\",\n  \"Call_Start_Time\": \"2025-11-06T10:00:00+03:00\",\n  \"Call_Duration\": \"00:15:00\",\n  \"Description\": \"call\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/calls",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"calls"
+							]
+						},
+						"description": "إنشاء مكالمة جديدة"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Call",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Call_Duration\": \"00:20:00\",\n  \"Description\": \"calling \"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/calls/5866617000003509004",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"calls",
+								"5866617000003509004"
+							]
+						},
+						"description": "تحديث مكالمة"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Call",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/calls/5866617000003509004",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"calls",
+								"5866617000003509004"
+							]
+						},
+						"description": "حذف مكالمة"
+					},
+					"response": []
+				}
+			],
+			"description": "إدارة المكالمات في Zoho CRM"
+		},
+		{
+			"name": "Meetings",
+			"item": [
+				{
+					"name": "Get All Meetings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/meetings?page=1&per_page=25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"meetings"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "25"
+								}
+							]
+						},
+						"description": "جلب جميع الاجتماعات"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Meeting by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/meetings/{{meeting_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"meetings",
+								"{{meeting_id}}"
+							]
+						},
+						"description": "جلب اجتماع محدد"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Meeting",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Event_Title\": \"اجتماع مع العميل\",\n  \"Start_DateTime\": \"2025-11-10T14:00:00+03:00\",\n  \"End_DateTime\": \"2025-11-10T15:00:00+03:00\",\n  \"Location\": \"مكتب الرياض\",\n  \"Description\": \"مناقشة شروط القرض العقاري\",\n      \"Participants\": [\n        {\n            \"type\": \"contact\",\n            \"participant\": {\n                \"id\": \"5866617000003497006\",\n                \"name\": \"Omar\"\n            }\n        }\n       \n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/meetings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"meetings"
+							]
+						},
+						"description": "إنشاء اجتماع جديد"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Meeting",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Start_DateTime\": \"2025-11-10T15:00:00+03:00\",\n  \"End_DateTime\": \"2025-11-10T16:00:00+03:00\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/meetings/{{meeting_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"meetings",
+								"{{meeting_id}}"
+							]
+						},
+						"description": "تحديث اجتماع"
+					},
+					"response": []
+				}
+			],
+			"description": "إدارة الاجتماعات في Zoho CRM"
+		},
+		{
+			"name": "Notes",
+			"item": [
+				{
+					"name": "Get Notes for Record",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/notes/Leads/{{lead_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notes",
+								"Leads",
+								"{{lead_id}}"
+							]
+						},
+						"description": "جلب جميع الملاحظات لسجل معين"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Note",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Note_Title\": \"ملاحظة مهمة\",\n  \"Note_Content\": \"العميل مهتم بالقرض العقاري ويريد المزيد من التفاصيل\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notes/Leads/{{lead_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notes",
+								"Leads",
+								"{{lead_id}}"
+							]
+						},
+						"description": "إنشاء ملاحظة جديدة"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Note",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Note_Content\": \"تم الاتفاق على شروط القرض\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notes/{{note_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notes",
+								"{{note_id}}"
+							]
+						},
+						"description": "تحديث ملاحظة"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Note",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/notes/{{note_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notes",
+								"{{note_id}}"
+							]
+						},
+						"description": "حذف ملاحظة"
+					},
+					"response": []
+				}
+			],
+			"description": "إدارة الملاحظات في Zoho CRM"
+		},
+		{
+			"name": "Advanced Search",
+			"item": [
+				{
+					"name": "Search by Email",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/search/email?module=Leads&email=ahmed@riyadh.com",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"search",
+								"email"
+							],
+							"query": [
+								{
+									"key": "module",
+									"value": "Leads"
+								},
+								{
+									"key": "email",
+									"value": "ahmed@riyadh.com"
+								}
+							]
+						},
+						"description": "البحث بواسطة البريد الإلكتروني"
+					},
+					"response": []
+				},
+				{
+					"name": "Search by Phone",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/search/phone?module=Leads&phone=+966501234567",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"search",
+								"phone"
+							],
+							"query": [
+								{
+									"key": "module",
+									"value": "Leads"
+								},
+								{
+									"key": "phone",
+									"value": "+966501234567"
+								}
+							]
+						},
+						"description": "البحث بواسطة رقم الهاتف"
+					},
+					"response": []
+				},
+				{
+					"name": "Search by Name",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/search/name?module=Leads&name=أحمد",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"search",
+								"name"
+							],
+							"query": [
+								{
+									"key": "module",
+									"value": "Leads"
+								},
+								{
+									"key": "name",
+									"value": "أحمد"
+								}
+							]
+						},
+						"description": "البحث بواسطة الاسم"
+					},
+					"response": []
+				}
+			],
+			"description": "البحث المتقدم في Zoho CRM"
+		},
+		{
+			"name": "Bulk Operations",
+			"item": [
+				{
+					"name": "Bulk Create Records",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"records\": [\n    {\n      \"Last_Name\": \"أحمد\",\n      \"First_Name\": \"محمد\",\n      \"Company\": \"شركة الرياض\",\n      \"Email\": \"ahmed@riyadh.com\",\n      \"Phone\": \"+966501234567\"\n    },\n    {\n      \"Last_Name\": \"السعيد\",\n      \"First_Name\": \"فاطمة\",\n      \"Company\": \"شركة النور\",\n      \"Email\": \"fatima@noor.com\",\n      \"Phone\": \"+966507654321\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/bulk/Leads/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"bulk",
+								"Leads",
+								"create"
+							]
+						},
+						"description": "إنشاء عدة سجلات دفعة واحدة (حتى 100 سجل)"
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Update Records",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"records\": [\n    {\n      \"id\": \"5847210000001234567\",\n      \"Lead_Status\": \"Contacted\"\n    },\n    {\n      \"id\": \"5847210000001234568\",\n      \"Lead_Status\": \"Qualified\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/bulk/Leads/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"bulk",
+								"Leads",
+								"update"
+							]
+						},
+						"description": "تحديث عدة سجلات دفعة واحدة (حتى 100 سجل)"
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Delete Records",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ids\": [\n    \"5847210000001234567\",\n    \"5847210000001234568\",\n    \"5847210000001234569\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/bulk/Leads/delete",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"bulk",
+								"Leads",
+								"delete"
+							]
+						},
+						"description": "حذف عدة سجلات دفعة واحدة (حتى 100 سجل)"
+					},
+					"response": []
+				}
+			],
+			"description": "العمليات الجماعية في Zoho CRM"
+		},
+		{
+			"name": "Related Records",
+			"item": [
+				{
+					"name": "Get Related Records",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/related/Accounts/{{account_id}}/Contacts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"related",
+								"Accounts",
+								"{{account_id}}",
+								"Contacts"
+							]
+						},
+						"description": "جلب السجلات المرتبطة بسجل معين"
+					},
+					"response": []
+				},
+				{
+					"name": "Associate Related Records",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ids\": [\n    \"5847210000002345678\",\n    \"5847210000002345679\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/related/Accounts/{{account_id}}/Contacts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"related",
+								"Accounts",
+								"{{account_id}}",
+								"Contacts"
+							]
+						},
+						"description": "ربط سجلات بسجل آخر"
+					},
+					"response": []
+				},
+				{
+					"name": "Dissociate Related Records",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ids\": [\n    \"5847210000002345678\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/related/Accounts/{{account_id}}/Contacts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"related",
+								"Accounts",
+								"{{account_id}}",
+								"Contacts"
+							]
+						},
+						"description": "فك ربط سجلات من سجل آخر"
+					},
+					"response": []
+				}
+			],
+			"description": "إدارة السجلات المرتبطة"
+		},
+		{
+			"name": "Metadata",
+			"item": [
+				{
+					"name": "Get All Modules",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/metadata/modules",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"metadata",
+								"modules"
+							]
+						},
+						"description": "جلب قائمة بجميع الوحدات المتاحة"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Module Metadata",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/metadata/modules/Leads",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"metadata",
+								"modules",
+								"Leads"
+							]
+						},
+						"description": "جلب معلومات تفصيلية عن وحدة معينة"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Fields Metadata",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/metadata/fields/Leads",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"metadata",
+								"fields",
+								"Leads"
+							]
+						},
+						"description": "جلب قائمة بجميع الحقول المتاحة في وحدة معينة"
+					},
+					"response": []
+				}
+			],
+			"description": "معلومات الوحدات والحقول"
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users?page=1&per_page=25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "25"
+								}
+							]
+						},
+						"description": "جلب قائمة بجميع المستخدمين"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/current",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"current"
+							]
+						},
+						"description": "جلب معلومات المستخدم الحالي"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}"
+							]
+						},
+						"description": "جلب معلومات مستخدم محدد"
+					},
+					"response": []
+				}
+			],
+			"description": "إدارة المستخدمين"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost/api/crm"
+		},
+		{
+			"key": "lead_id",
+			"value": ""
+		},
+		{
+			"key": "contact_id",
+			"value": ""
+		},
+		{
+			"key": "account_id",
+			"value": ""
+		},
+		{
+			"key": "deal_id",
+			"value": ""
+		}
+	]
+}

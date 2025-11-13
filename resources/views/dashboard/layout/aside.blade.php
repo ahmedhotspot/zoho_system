@@ -234,6 +234,28 @@
                             </a>
                         </div>
                         <!--end::Calls-->
+
+                        <!--begin::Events-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('crm.events.*') ? 'active' : '' }}" href="{{ route('crm.events.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.events') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Events-->
+
+                        <!--begin::Notes-->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('crm.notes.*') ? 'active' : '' }}" href="{{ route('crm.notes.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{ __('dashboard.notes') }}</span>
+                            </a>
+                        </div>
+                        <!--end::Notes-->
                     </div>
                 </div>
                 <!--end::Zoho CRM Dropdown-->

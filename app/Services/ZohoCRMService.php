@@ -83,7 +83,7 @@ class ZohoCRMService
             'Accounts' => 'id,Account_Name,Phone,Website,Account_Type,Industry,Annual_Revenue,Employees,Rating,Billing_Street,Billing_City,Billing_State,Created_Time,Modified_Time,Owner',
             'Deals' => 'id,Deal_Name,Amount,Stage,Closing_Date,Account_Name,Contact_Name,Type,Probability,Next_Step,Lead_Source,Created_Time,Modified_Time,Owner',
             'Tasks' => 'id,Subject,Status,Priority,Due_Date,Description,Created_Time,Modified_Time,Owner',
-            'Calls' => 'id,Subject,Call_Type,Call_Start_Time,Call_Duration,Description,Created_Time,Modified_Time,Owner',
+            'Calls' => 'id,Subject,Call_Type,Call_Purpose,Call_Start_Time,Call_Duration,Call_Result,What_Id,Who_Id,Description,Call_Agenda,Outgoing_Call_Status,Caller_ID,Dialled_Number,Voice_Recording,Created_Time,Modified_Time,Owner',
             'Events' => 'id,Event_Title,Start_DateTime,End_DateTime,Venue,Participants,Description,Created_Time,Modified_Time,Owner',
             'Notes' => 'id,Note_Title,Note_Content,Parent_Id,Created_Time,Modified_Time,Owner',
         ];
@@ -104,7 +104,7 @@ class ZohoCRMService
     /**
      * Make API request to Zoho CRM
      */
-    protected function apiRequest(string $method, string $path, array $params = [], $body = null)
+    protected function apiRequest(string $method, string $path, array $params = [], $body = null, array $customHeaders = [])
     {
         $accessToken = $this->getAccessToken();
 
@@ -113,6 +113,9 @@ class ZohoCRMService
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
+
+        // Merge custom headers
+        $headers = array_merge($headers, $customHeaders);
 
         $url = rtrim($this->apiDomain, '/') . $path;
         $method = strtolower($method);
@@ -147,6 +150,11 @@ class ZohoCRMService
             }
         }
 
+        // Handle 304 Not Modified - no changes since last sync
+        if ($response->status() === 304) {
+            return ['data' => [], 'info' => ['more_records' => false]];
+        }
+
         if (!$response->successful()) {
             $payload = $response->json() ?? $response->body();
             throw new Exception("Zoho CRM API error ({$response->status()}): " . json_encode($payload));
@@ -165,7 +173,15 @@ class ZohoCRMService
     public function getLeads(array $params = [])
     {
         $this->ensureFields('Leads', $params);
-        return $this->apiRequest('GET', '/Leads', $params);
+
+        // Extract modified_since for header
+        $headers = [];
+        if (isset($params['modified_since'])) {
+            $headers['If-Modified-Since'] = date('c', strtotime($params['modified_since']));
+            unset($params['modified_since']);
+        }
+
+        return $this->apiRequest('GET', '/Leads', $params, null, $headers);
     }
 
     /**
@@ -246,7 +262,15 @@ public function convertLead($leadId, array $conversionData = [])
     public function getContacts(array $params = [])
     {
         $this->ensureFields('Contacts', $params);
-        return $this->apiRequest('GET', '/Contacts', $params);
+
+        // Extract modified_since for header
+        $headers = [];
+        if (isset($params['modified_since'])) {
+            $headers['If-Modified-Since'] = date('c', strtotime($params['modified_since']));
+            unset($params['modified_since']);
+        }
+
+        return $this->apiRequest('GET', '/Contacts', $params, null, $headers);
     }
 
     /**
@@ -300,7 +324,15 @@ public function convertLead($leadId, array $conversionData = [])
     public function getAccounts(array $params = [])
     {
         $this->ensureFields('Accounts', $params);
-        return $this->apiRequest('GET', '/Accounts', $params);
+
+        // Extract modified_since for header
+        $headers = [];
+        if (isset($params['modified_since'])) {
+            $headers['If-Modified-Since'] = date('c', strtotime($params['modified_since']));
+            unset($params['modified_since']);
+        }
+
+        return $this->apiRequest('GET', '/Accounts', $params, null, $headers);
     }
 
     /**
@@ -406,7 +438,15 @@ public function convertLead($leadId, array $conversionData = [])
     public function getDeals(array $params = [])
     {
         $this->ensureFields('Deals', $params);
-        return $this->apiRequest('GET', '/Deals', $params);
+
+        // Extract modified_since for header
+        $headers = [];
+        if (isset($params['modified_since'])) {
+            $headers['If-Modified-Since'] = date('c', strtotime($params['modified_since']));
+            unset($params['modified_since']);
+        }
+
+        return $this->apiRequest('GET', '/Deals', $params, null, $headers);
     }
 
     /**
@@ -509,6 +549,64 @@ public function convertLead($leadId, array $conversionData = [])
     // ==========================================
 
     /**
+     * Get all events
+     */
+    public function getEvents(array $params = [])
+    {
+        $this->ensureFields('Events', $params);
+
+        // Extract modified_since for header
+        $headers = [];
+        if (isset($params['modified_since'])) {
+            $headers['If-Modified-Since'] = date('c', strtotime($params['modified_since']));
+            unset($params['modified_since']);
+        }
+
+        return $this->apiRequest('GET', '/Events', $params, null, $headers);
+    }
+
+    /**
+     * Get specific event by ID
+     */
+    public function getEvent($eventId, array $params = [])
+    {
+        $this->ensureFields('Events', $params);
+        return $this->apiRequest('GET', "/Events/{$eventId}", $params);
+    }
+
+    /**
+     * Create event
+     */
+    public function createEvent(array $data)
+    {
+        $body = [
+            'data' => [$data]
+        ];
+
+        return $this->apiRequest('POST', '/Events', [], $body);
+    }
+
+    /**
+     * Update event
+     */
+    public function updateEvent($eventId, array $data)
+    {
+        $body = [
+            'data' => [$data]
+        ];
+
+        return $this->apiRequest('PUT', "/Events/{$eventId}", [], $body);
+    }
+
+    /**
+     * Delete event
+     */
+    public function deleteEvent($eventId)
+    {
+        return $this->apiRequest('DELETE', "/Events/{$eventId}");
+    }
+
+    /**
      * Get all meetings
      */
     public function getMeetings(array $params = [])
@@ -557,7 +655,16 @@ public function convertLead($leadId, array $conversionData = [])
     // ==========================================
 
     /**
-     * Get notes for a record
+     * Get all notes (with optional filters)
+     */
+    public function getAllNotes(array $params = [])
+    {
+        $this->ensureFields('Notes', $params);
+        return $this->apiRequest('GET', '/Notes', $params);
+    }
+
+    /**
+     * Get notes for a specific record
      */
     public function getNotes($module, $recordId, array $params = [])
     {
@@ -574,7 +681,8 @@ public function convertLead($leadId, array $conversionData = [])
             'Note_Content' => $noteContent,
             'Parent_Id' => [
                 'id' => $recordId
-            ]
+            ],
+            'se_module' => $module  // Required field!
         ];
 
         if ($noteTitle) {
@@ -782,4 +890,5 @@ public function convertLead($leadId, array $conversionData = [])
     {
         return $this->apiRequest('GET', '/users?type=CurrentUser');
     }
+
 }

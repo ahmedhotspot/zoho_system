@@ -78,13 +78,28 @@ class SyncCallsFromZohoCRM implements ShouldQueue
         try {
             $localCall = CrmCall::where('zoho_call_id', $zohoCall['id'])->first();
 
+            // Convert call_duration from HH:MM format to minutes
+            $callDuration = null;
+            if (isset($zohoCall['Call_Duration'])) {
+                $duration = $zohoCall['Call_Duration'];
+                // Check if it's in HH:MM format (e.g., "00:40")
+                if (preg_match('/^(\d{1,2}):(\d{2})$/', $duration, $matches)) {
+                    $hours = (int) $matches[1];
+                    $minutes = (int) $matches[2];
+                    $callDuration = ($hours * 60) + $minutes;
+                } else {
+                    // If it's already a number, use it as is
+                    $callDuration = is_numeric($duration) ? (int) $duration : null;
+                }
+            }
+
             $callData = [
                 'zoho_call_id' => $zohoCall['id'],
                 'subject' => $zohoCall['Subject'] ?? null,
                 'call_type' => $zohoCall['Call_Type'] ?? null,
                 'call_purpose' => $zohoCall['Call_Purpose'] ?? null,
                 'call_start_time' => isset($zohoCall['Call_Start_Time']) ? date('Y-m-d H:i:s', strtotime($zohoCall['Call_Start_Time'])) : null,
-                'call_duration' => $zohoCall['Call_Duration'] ?? null,
+                'call_duration' => $callDuration,
                 'call_result' => $zohoCall['Call_Result'] ?? null,
                 'related_to_type' => $zohoCall['What_Id']['module'] ?? null,
                 'related_to_id' => $zohoCall['What_Id']['id'] ?? null,
