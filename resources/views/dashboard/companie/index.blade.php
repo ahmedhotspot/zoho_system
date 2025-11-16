@@ -201,7 +201,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <span>{{ $company->financing_type->name ?? '' }}</span>
+                                                <span>{{ $company->financingType->name ?? '' }}</span>
                                             </td>
 
                                             <td>
