@@ -12,7 +12,8 @@ class FinancingsController extends Controller
     public function add_new_financings(Request $request)
     {
 
-        $company = Companie::where('user_id', $request->user_id)->first();
+        $company = Companie::where('user_id', $request->company_id)->first();
+
         if (! $company) {
             return response('not null', 404);
         }
@@ -22,12 +23,12 @@ class FinancingsController extends Controller
             'phone' => $request->phone,
             'iqama_number' => $request->iqama_number,
             'application_id' => $request->application_id,
-            'financingcompanies' => $request->company_name,
-            'price' => $request->amount,
+            'financingcompanies' => $request->financingcompanies,
+            'price' => $request->price,
             'company_id' => $company->id,
             'financing_type_id' => $company->financing_type_id,
         ]);
 
-        return response('suucess', 200);
+         return response('suucess',200);
     }
 }
