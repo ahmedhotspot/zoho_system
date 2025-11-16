@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\FinancingTypeController;
 use App\Http\Controllers\CompanieController;
+use App\Http\Controllers\FinancingController;
 use App\Jobs\SyncCompaniesFromAPI;
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -284,6 +285,13 @@ Route::prefix('companies')->name('companies.')->middleware('auth')->group(functi
         } catch (\Exception $e) {
         }
     })->name('sync');
+});
+
+Route::prefix('financings')->group(function(){
+Route::get('/', [FinancingController::class, 'index'])->name('financings.index');
+Route::get('/{id}', [FinancingController::class, 'show'])->name('financings.show');
+
+
 });
 
 });
