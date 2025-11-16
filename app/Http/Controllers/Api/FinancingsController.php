@@ -13,25 +13,21 @@ class FinancingsController extends Controller
     {
 
         $company = Companie::where('user_id', $request->user_id)->first();
-        if (!$company){
-            return response('not null',404);
+        if (! $company) {
+            return response('not null', 404);
         }
 
-
         Financing::create([
-            'name'=>$request->name,
-            'phone'=>$request->phone,
-            'iqama_number'=>$request->iqama_number,
-            'application_id'=>$request->application_id,
-            'financingcompanies'=>$request->company_name,
-            'price'=>$request->amount,
-            'company_id'=>$company->id,
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'iqama_number' => $request->iqama_number,
+            'application_id' => $request->application_id,
+            'financingcompanies' => $request->company_name,
+            'price' => $request->amount,
+            'company_id' => $company->id,
+            'financing_type_id' => $company->financing_type_id,
         ]);
 
-
-
-        
-
-    return response('suucess',200);
+        return response('suucess', 200);
     }
 }

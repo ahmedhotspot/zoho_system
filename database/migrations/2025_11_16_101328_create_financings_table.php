@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('financingcompanies')->nullable();
             $table->string('price')->nullable();
             $table->foreignId('company_id')->nullable()->constrained('companies')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('financing_type_id')->nullable()->constrained('companies','financing_type_id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
