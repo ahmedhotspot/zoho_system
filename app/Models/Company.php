@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Companie extends Model
+class Company extends Model
 {
 
     protected $fillable = [
@@ -25,10 +25,11 @@ class Companie extends Model
         return $query->where('is_active', false);
     }
 
-    public function financing_type()
+    public function financingType()
     {
         return $this->belongsTo(FinancingType::class,'financing_type_id');
     }
+
 
 
 }

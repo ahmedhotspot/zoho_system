@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Companie;
+use App\Models\Company;
 use App\Models\FinancingType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +16,7 @@ class CompanieController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Companie::orderBy('created_at', 'desc');
+            $query = Company::orderBy('created_at', 'desc');
 
             // Apply search filter
             if ($request->filled('search')) {
@@ -96,7 +97,7 @@ class CompanieController extends Controller
                 ? $validated['contract_value_percentage']
                 : $validated['contract_value_fixed'];
 
-            Companie::create([
+            Company::create([
                 'name' => $validated['name'],
                 'contract_type' => $validated['contract_type'],
                 'contract_value' => $contractValue,
@@ -120,7 +121,7 @@ class CompanieController extends Controller
     public function edit($id)
     {
         try {
-            $company = Companie::findOrFail($id);
+            $company = Company::findOrFail($id);
             $financing_types = FinancingType::where('is_active', true)->get();
 
             return view('dashboard.companie.create', compact('company', 'financing_types'));
@@ -147,13 +148,13 @@ class CompanieController extends Controller
             'financing_type_id' => 'required|exists:financing_types,id',
             'is_active' => 'boolean',
         ]);
-       
+
 
         $contractValue = $validated['contract_type'] === 'percentage'
             ? $validated['contract_value_percentage']
             : $validated['contract_value_fixed'];
 
-        $company = Companie::findOrFail($id);
+        $company = Company::findOrFail($id);
 
         $company->update([
             'name' => $validated['name'],
@@ -173,7 +174,7 @@ class CompanieController extends Controller
     public function destroy($id)
     {
         try {
-            $company = Companie::findOrFail($id);
+            $company = Company::findOrFail($id);
             $company->delete();
 
             return redirect()->route('companies.index')

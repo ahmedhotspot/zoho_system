@@ -11,12 +11,14 @@ use App\Jobs\SyncCompaniesFromAPI;
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
 Route::group(
     [
         'prefix' => \Mcamara\LaravelLocalization\Facades\LaravelLocalization::setLocale(),
         'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]
     ], function() {
+
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
+
 
 // Invoices Routes
 Route::prefix('invoices')->name('invoices.')->middleware('auth')->group(function () {

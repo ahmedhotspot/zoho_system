@@ -19,11 +19,11 @@ class Financing extends Model
 
     public function company()
     {
-        return $this->belongsTo(Companie::class, 'company_id');
+        return $this->belongsTo(Company::class, 'company_id', 'user_id');
     }
 
-    public function financing_type()
+    public function financingType()
     {
-        return $this->belongsTo(Companie::class, 'financing_type_id');
+        return $this->belongsTo(Company::class, 'financing_type_id');
     }
 }
