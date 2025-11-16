@@ -1,14 +1,17 @@
 <?php
 
+use App\Http\Controllers\Api\BooksController;
+use App\Http\Controllers\Api\FinancingsController;
+use App\Models\Companie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\CRMController;
-use App\Http\Controllers\Api\BooksController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+
+Route::post('add_new_financings',[FinancingsController::class,'add_new_financings']);
 
 // Zoho Books API Routes
 Route::prefix('books')->name('books.')->group(function () {
@@ -47,10 +50,10 @@ Route::prefix('books')->name('books.')->group(function () {
     });
 
     Route::prefix('accounts')->name('accounts.')->group(function () {
-    Route::get('/', [BooksController::class, 'getAccounts'])->name('index');
-    Route::get('/expense', [BooksController::class, 'getExpenseAccounts'])->name('expense');
-    Route::get('/cash-bank', [BooksController::class, 'getCashAndBankAccounts'])->name('cash-bank');
-});
+        Route::get('/', [BooksController::class, 'getAccounts'])->name('index');
+        Route::get('/expense', [BooksController::class, 'getExpenseAccounts'])->name('expense');
+        Route::get('/cash-bank', [BooksController::class, 'getCashAndBankAccounts'])->name('cash-bank');
+    });
 
     // Estimates
     Route::prefix('estimates')->name('estimates.')->group(function () {
@@ -77,5 +80,3 @@ Route::prefix('books')->name('books.')->group(function () {
         Route::post('/', [BooksController::class, 'createPayment'])->name('store');
     });
 });
-
-
