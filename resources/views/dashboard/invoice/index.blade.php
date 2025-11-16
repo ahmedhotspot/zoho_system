@@ -5,7 +5,6 @@
 @push('head')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @endpush
-
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Toolbar-->

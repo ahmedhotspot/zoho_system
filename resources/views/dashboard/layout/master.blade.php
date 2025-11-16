@@ -65,6 +65,12 @@
             .dropdown-item {
                 text-align: right;
             }
+
+      [dir="rtl"]  .select2-container--bootstrap5 .select2-dropdown{
+                /* direction: ltr; */
+                right: unset;
+                left: 0;
+            }
         </style>
         <!--end::Custom RTL Styles-->
     @else

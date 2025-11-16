@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Customer;
+use App\Models\Item;
 
 class InvoiceController extends Controller
 {
@@ -85,33 +87,40 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-
         try {
-            // Get all contacts first
-            $customersData = $this->books->getCustomers();
-            $allContacts = $customersData['contacts'] ?? [];
+            // Get customers from local database (only customers, not vendors)
+            $customers = Customer::active()
+                ->customers()
+                ->select('id', 'zoho_contact_id', 'contact_name', 'company_name', 'email', 'phone')
+                ->orderBy('contact_name')
+                ->get()
+                ->map(function ($customer) {
+                    return [
+                        'contact_id' => $customer->zoho_contact_id,
+                        'contact_name' => $customer->contact_name,
+                        'company_name' => $customer->company_name,
+                        'email' => $customer->email,
+                        'phone' => $customer->phone,
+                    ];
+                })
+                ->toArray();
 
-            // Filter to get only customers (not vendors)
-            $customers = collect($allContacts)->filter(function ($contact) {
-                // Check if contact_type exists and is 'customer', or if contact_type is not set (default to customer)
-                return !isset($contact['contact_type']) ||
-                       $contact['contact_type'] === 'customer' ||
-                       $contact['contact_type'] === '';
-            })->values()->all();
-
-            // Get items for line items - filter sales items only
-            $itemsData = $this->books->getItems();
-            $allItems = $itemsData['items'] ?? [];
-
-            // Filter to get only sales items (exclude purchase-only items)
-            $items = collect($allItems)->filter(function ($item) {
-                // Include items that have sales information
-                return isset($item['rate']) ||
-                       isset($item['sales_rate']) ||
-                       (isset($item['item_type']) && $item['item_type'] !== 'purchase') ||
-                       !isset($item['is_purchase_item']) ||
-                       $item['is_purchase_item'] === false;
-            })->values()->all();
+            $items = Item::active()
+                ->sales()
+                ->select('id', 'zoho_item_id', 'name', 'description', 'rate', 'tax_percentage', 'unit')
+                ->orderBy('name')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'item_id' => $item->zoho_item_id,
+                        'name' => $item->name,
+                        'description' => $item->description,
+                        'rate' => $item->rate,
+                        'tax_percentage' => $item->tax_percentage,
+                        'unit' => $item->unit,
+                    ];
+                })
+                ->toArray();
 
             return view('dashboard.invoice.create', compact('customers', 'items'));
 
@@ -187,6 +196,7 @@ class InvoiceController extends Controller
             $localInvoice = Invoice::create([
                 'zoho_invoice_id' => $zohoInvoice['invoice_id'] ?? null,
                 'zoho_customer_id' => $request->customer_id,
+                'invoice_url' => $zohoInvoice['invoice_url'] ?? null,
                 'invoice_number' => $invoiceNumber,
                 'invoice_date' => $request->date ?? now()->format('Y-m-d'),
                 'due_date' => $request->due_date,
@@ -275,6 +285,7 @@ class InvoiceController extends Controller
             // Convert to array format for compatibility with existing views
             $invoiceArray = [
                 'invoice_id' => $invoice->zoho_invoice_id,
+                'invoice_url' => $invoice->invoice_url,
                 'invoice_number' => $invoice->invoice_number,
                 'date' => $invoice->invoice_date->format('Y-m-d'),
                 'due_date' => $invoice->due_date ? $invoice->due_date->format('Y-m-d') : null,
@@ -316,47 +327,77 @@ class InvoiceController extends Controller
     public function edit($id)
     {
         try {
-            $invoiceData = $this->books->getInvoice($id);
-            $invoice = $invoiceData['invoice'] ?? null;
-
-            if (!$invoice) {
-                return redirect()->route('invoices.index')
-                    ->with('error', 'Invoice not found');
-            }
+            // Get invoice from local database
+            $localInvoice = Invoice::with('items')->findOrFail($id);
 
             // Only allow editing of draft invoices
-            if ($invoice['status'] !== 'draft') {
+            if ($localInvoice->status !== 'draft') {
                 return redirect()->route('invoices.show', $id)
                     ->with('error', 'Only draft invoices can be edited');
             }
 
-            // Get all contacts first
-            $customersData = $this->books->getCustomers();
-            $allContacts = $customersData['contacts'] ?? [];
+            // Convert to array format expected by the view
+            $invoice = [
+                'invoice_id' => $localInvoice->zoho_invoice_id,
+                'customer_id' => $localInvoice->zoho_customer_id,
+                'invoice_number' => $localInvoice->invoice_number,
+                'date' => $localInvoice->invoice_date,
+                'due_date' => $localInvoice->due_date,
+                'status' => $localInvoice->status,
+                'sub_total' => $localInvoice->subtotal,
+                'tax_total' => $localInvoice->tax_amount,
+                'total' => $localInvoice->total,
+                'notes' => $localInvoice->notes,
+                'terms' => $localInvoice->terms,
+                'line_items' => $localInvoice->items->map(function ($lineItem) {
+                    return [
+                        'item_id' => $lineItem->zoho_item_id,
+                        'name' => $lineItem->item_name,
+                        'description' => $lineItem->description,
+                        'quantity' => $lineItem->quantity,
+                        'rate' => $lineItem->rate,
+                        'tax_percentage' => $lineItem->tax_percentage,
+                        'item_total' => $lineItem->amount,
+                    ];
+                })->toArray(),
+            ];
 
-            // Filter to get only customers (not vendors)
-            $customers = collect($allContacts)->filter(function ($contact) {
-                // Check if contact_type exists and is 'customer', or if contact_type is not set (default to customer)
-                return !isset($contact['contact_type']) ||
-                       $contact['contact_type'] === 'customer' ||
-                       $contact['contact_type'] === '';
-            })->values()->all();
+            // Get customers from local database (only customers, not vendors)
+            $customers = Customer::active()
+                ->customers()
+                ->select('id', 'zoho_contact_id', 'contact_name', 'company_name', 'email', 'phone')
+                ->orderBy('contact_name')
+                ->get()
+                ->map(function ($customer) {
+                    return [
+                        'contact_id' => $customer->zoho_contact_id,
+                        'contact_name' => $customer->contact_name,
+                        'company_name' => $customer->company_name,
+                        'email' => $customer->email,
+                        'phone' => $customer->phone,
+                    ];
+                })
+                ->toArray();
 
-            // Get items for line items - filter sales items only
-            $itemsData = $this->books->getItems();
-            $allItems = $itemsData['items'] ?? [];
+            // Get items from local database (only sales items)
+            $items = Item::active()
+                ->sales()
+                ->select('id', 'zoho_item_id', 'name', 'description', 'rate', 'tax_percentage', 'unit')
+                ->orderBy('name')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'item_id' => $item->zoho_item_id,
+                        'name' => $item->name,
+                        'description' => $item->description,
+                        'rate' => $item->rate,
+                        'tax_percentage' => $item->tax_percentage,
+                        'unit' => $item->unit,
+                    ];
+                })
+                ->toArray();
 
-            // Filter to get only sales items (exclude purchase-only items)
-            $items = collect($allItems)->filter(function ($item) {
-                // Include items that have sales information
-                return isset($item['rate']) ||
-                       isset($item['sales_rate']) ||
-                       (isset($item['item_type']) && $item['item_type'] !== 'purchase') ||
-                       !isset($item['is_purchase_item']) ||
-                       $item['is_purchase_item'] === false;
-            })->values()->all();
-
-            return view('dashboard.invoice.edit', compact('invoice', 'customers', 'items'));
+            return view('dashboard.invoice.create', compact('invoice', 'customers', 'items'));
 
         } catch (\Exception $e) {
             Log::error('Error loading invoice edit form: ' . $e->getMessage());
@@ -399,8 +440,10 @@ class InvoiceController extends Controller
             ];
 
             // Update invoice in Zoho Books if synced
+            $zohoInvoice = null;
             if ($localInvoice->zoho_invoice_id) {
-                $this->books->updateInvoice($localInvoice->zoho_invoice_id, $zohoInvoiceData);
+                $zohoResponse = $this->books->updateInvoice($localInvoice->zoho_invoice_id, $zohoInvoiceData);
+                $zohoInvoice = $zohoResponse['invoice'] ?? null;
             }
 
             // Get customer details from Zoho
@@ -430,6 +473,7 @@ class InvoiceController extends Controller
             // Update local invoice
             $localInvoice->update([
                 'zoho_customer_id' => $request->customer_id,
+                'invoice_url' => $zohoInvoice['invoice_url'] ?? $localInvoice->invoice_url,
                 'invoice_date' => $request->date,
                 'due_date' => $request->due_date,
                 'customer_name' => $customer['contact_name'] ?? $localInvoice->customer_name,

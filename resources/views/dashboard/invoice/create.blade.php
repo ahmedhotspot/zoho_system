@@ -3,6 +3,10 @@
 
 @push('head')
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<script>
+    // Pass validation errors to JavaScript
+    window.validationErrors = @json($errors->messages());
+</script>
 @endpush
 
 @section('content')
@@ -76,8 +80,11 @@
             @endif
 
             <!--begin::Form-->
-            <form id="invoice_form" action="{{ route('invoices.store') }}" method="POST">
+            <form id="invoice_form" action="{{ isset($invoice) ? route('invoices.update', $invoice['invoice_id']) : route('invoices.store') }}" method="POST">
                 @csrf
+                @if(isset($invoice))
+                    @method('PUT')
+                @endif
 
                 <!--begin::Invoice Details Card-->
                 <div class="card mb-5 mb-xl-10">
@@ -97,10 +104,11 @@
                                 <!--begin::Customer-->
                                 <div class="fv-row">
                                     <label class="fs-6 fw-semibold form-label mb-2 required">{{ __('dashboard.select_customer') }}</label>
-                                    <select name="customer_id" class="form-select form-select-solid" data-control="select2" data-placeholder="{{ __('dashboard.choose_customer') }}" data-allow-clear="true" required>
+                                    <select name="customer_id" class="form-select form-select-solid @error('customer_id') is-invalid @enderror" data-control="select2" data-placeholder="{{ __('dashboard.choose_customer') }}" data-allow-clear="true" required>
                                         <option></option>
                                         @foreach($customers as $customer)
-                                            <option value="{{ $customer['contact_id'] ?? $customer['id'] }}" {{ old('customer_id') == ($customer['contact_id'] ?? $customer['id']) ? 'selected' : '' }}>
+                                            <option value="{{ $customer['contact_id'] ?? $customer['id'] }}"
+                                                {{ old('customer_id', $invoice['customer_id'] ?? '') == ($customer['contact_id'] ?? $customer['id']) ? 'selected' : '' }}>
                                                 {{ $customer['contact_name'] ?? $customer['name'] ?? 'N/A' }}
                                                 @if(isset($customer['company_name']) && $customer['company_name'])
                                                     - {{ $customer['company_name'] }}
@@ -120,7 +128,7 @@
                                 <!--begin::Invoice Number-->
                                 <div class="fv-row">
                                     <label class="fs-6 fw-semibold form-label mb-2">{{ __('dashboard.invoice_number') }}</label>
-                                    <input type="text" name="invoice_number" class="form-control form-control-solid" placeholder="{{ __('dashboard.auto_generated') }}" value="{{ old('invoice_number') }}" readonly />
+                                    <input type="text" name="invoice_number" class="form-control form-control-solid" placeholder="{{ __('dashboard.auto_generated') }}" value="{{ old('invoice_number', $invoice['invoice_number'] ?? '') }}" readonly />
                                     <div class="form-text">{{ __('dashboard.auto_generated') }}</div>
                                 </div>
                                 <!--end::Invoice Number-->
@@ -134,7 +142,7 @@
                                 <!--begin::Invoice Date-->
                                 <div class="fv-row">
                                     <label class="fs-6 fw-semibold form-label mb-2 required">{{ __('dashboard.invoice_date') }}</label>
-                                    <input type="date" name="date" class="form-control form-control-solid" value="{{ old('date', date('Y-m-d')) }}" required />
+                                    <input type="date" name="date" class="form-control form-control-solid @error('date') is-invalid @enderror" value="{{ old('date', isset($invoice) ? $invoice['date'] : date('Y-m-d')) }}" required />
                                     @error('date')
                                         <div class="text-danger fs-7 mt-1">{{ $message }}</div>
                                     @enderror
@@ -147,7 +155,7 @@
                                 <!--begin::Due Date-->
                                 <div class="fv-row">
                                     <label class="fs-6 fw-semibold form-label mb-2">{{ __('dashboard.due_date') }}</label>
-                                    <input type="date" name="due_date" class="form-control form-control-solid" value="{{ old('due_date', date('Y-m-d', strtotime('+30 days'))) }}" />
+                                    <input type="date" name="due_date" class="form-control form-control-solid @error('due_date') is-invalid @enderror" value="{{ old('due_date', isset($invoice) ? $invoice['due_date'] : date('Y-m-d', strtotime('+30 days'))) }}" />
                                     @error('due_date')
                                         <div class="text-danger fs-7 mt-1">{{ $message }}</div>
                                     @enderror
@@ -224,7 +232,7 @@
                                 <!--begin::Notes-->
                                 <div class="fv-row">
                                     <label class="fs-6 fw-semibold form-label mb-2">{{ __('dashboard.notes') }}</label>
-                                    <textarea name="notes" class="form-control form-control-solid" rows="4" placeholder="{{ __('dashboard.invoice_notes_placeholder') }}">{{ old('notes') }}</textarea>
+                                    <textarea name="notes" class="form-control form-control-solid @error('notes') is-invalid @enderror" rows="4" placeholder="{{ __('dashboard.invoice_notes_placeholder') }}">{{ old('notes', $invoice['notes'] ?? '') }}</textarea>
                                     @error('notes')
                                         <div class="text-danger fs-7 mt-1">{{ $message }}</div>
                                     @enderror
@@ -237,7 +245,7 @@
                                 <!--begin::Terms-->
                                 <div class="fv-row">
                                     <label class="fs-6 fw-semibold form-label mb-2">{{ __('dashboard.terms') }}</label>
-                                    <textarea name="terms" class="form-control form-control-solid" rows="4" placeholder="{{ __('dashboard.invoice_terms_placeholder') }}">{{ old('terms') }}</textarea>
+                                    <textarea name="terms" class="form-control form-control-solid @error('terms') is-invalid @enderror" rows="4" placeholder="{{ __('dashboard.invoice_terms_placeholder') }}">{{ old('terms', $invoice['terms'] ?? '') }}</textarea>
                                     @error('terms')
                                         <div class="text-danger fs-7 mt-1">{{ $message }}</div>
                                     @enderror
@@ -297,16 +305,23 @@
 document.addEventListener('DOMContentLoaded', function() {
     let lineItemIndex = 0;
     const items = @json($items);
+    const existingLineItems = @json($invoice['line_items'] ?? []);
 
     // Add line item
     document.getElementById('add_line_item').addEventListener('click', function() {
         addLineItem();
     });
 
-    // Add initial line item
-    addLineItem();
+    // Add existing line items or add initial empty line item
+    if (existingLineItems.length > 0) {
+        existingLineItems.forEach(function(lineItem) {
+            addLineItem(lineItem);
+        });
+    } else {
+        addLineItem();
+    }
 
-    function addLineItem() {
+    function addLineItem(existingItem = null) {
         const container = document.getElementById('line_items_container');
         const lineItemHtml = `
             <div class="line-item border border-gray-300 border-dashed rounded p-6 mb-5" data-index="${lineItemIndex}">
@@ -329,20 +344,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         <label class="fs-6 fw-semibold form-label mb-2 required">{{ __('dashboard.select_item') }}</label>
                         <select name="line_items[${lineItemIndex}][item_id]" class="form-select form-select-solid item-select" data-control="select2" data-placeholder="{{ __('dashboard.choose_item') }}" required>
                             <option></option>
-                            ${items.map(item => `<option value="${item.item_id || item.id}" data-rate="${item.rate || 0}">${item.name || 'N/A'}</option>`).join('')}
+                            ${items.map(item => `<option value="${item.item_id || item.id}" data-rate="${item.rate || 0}" ${existingItem && (item.item_id == existingItem.item_id || item.id == existingItem.item_id) ? 'selected' : ''}>${item.name || 'N/A'}</option>`).join('')}
                         </select>
+                        <div class="error-message text-danger fs-7 mt-1" data-field="line_items.${lineItemIndex}.item_id"></div>
                     </div>
                     <div class="col-lg-2 mb-4">
                         <label class="fs-6 fw-semibold form-label mb-2 required">{{ __('dashboard.quantity') }}</label>
-                        <input type="number" name="line_items[${lineItemIndex}][quantity]" class="form-control form-control-solid quantity-input" min="1" value="1" required />
+                        <input type="number" name="line_items[${lineItemIndex}][quantity]" class="form-control form-control-solid quantity-input" min="1" value="${existingItem ? existingItem.quantity : 1}" required />
+                        <div class="error-message text-danger fs-7 mt-1" data-field="line_items.${lineItemIndex}.quantity"></div>
                     </div>
                     <div class="col-lg-2 mb-4">
                         <label class="fs-6 fw-semibold form-label mb-2 required">{{ __('dashboard.rate') }}</label>
-                        <input type="number" name="line_items[${lineItemIndex}][rate]" class="form-control form-control-solid rate-input" min="0" step="0.01" value="0" required />
+                        <input type="number" name="line_items[${lineItemIndex}][rate]" class="form-control form-control-solid rate-input" min="0" step="0.01" value="${existingItem ? existingItem.rate : 0}" required />
+                        <div class="error-message text-danger fs-7 mt-1" data-field="line_items.${lineItemIndex}.rate"></div>
                     </div>
                     <div class="col-lg-2 mb-4">
                         <label class="fs-6 fw-semibold form-label mb-2">{{ __('dashboard.line_total') }}</label>
-                        <input type="text" class="form-control form-control-solid line-total" readonly value="0.00" />
+                        <input type="text" class="form-control form-control-solid line-total" readonly value="${existingItem ? existingItem.item_total : '0.00'}" />
                     </div>
                     <div class="col-lg-2 mb-4 d-flex align-items-end">
                         <button type="button" class="btn btn-sm btn-light-primary calculate-line w-100">
@@ -448,31 +466,83 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!customerSelect.value) {
             e.preventDefault();
-            alert('{{ __("dashboard.customer_required") }}');
+            customerSelect.classList.add('is-invalid');
+            // Scroll to customer field
+            customerSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return false;
         }
 
         if (lineItems.length === 0) {
             e.preventDefault();
-            alert('{{ __("dashboard.items_required") }}');
+            // Show error message in line items section
+            const lineItemsContainer = document.getElementById('line_items_container');
+            let errorDiv = lineItemsContainer.querySelector('.no-items-error');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'no-items-error alert alert-danger';
+                errorDiv.textContent = '{{ __("dashboard.items_required") }}';
+                lineItemsContainer.parentElement.insertBefore(errorDiv, lineItemsContainer);
+            }
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return false;
+        } else {
+            // Remove error if exists
+            const errorDiv = document.querySelector('.no-items-error');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
         }
 
         // Validate each line item
         let isValid = true;
-        lineItems.forEach(function(lineItem) {
+        lineItems.forEach(function(lineItem, index) {
             const itemSelect = lineItem.querySelector('.item-select');
             const quantity = lineItem.querySelector('.quantity-input');
             const rate = lineItem.querySelector('.rate-input');
 
-            if (!itemSelect.value || quantity.value < 1 || rate.value <= 0) {
+            // Clear previous errors
+            lineItem.querySelectorAll('.error-message').forEach(function(errorEl) {
+                errorEl.textContent = '';
+                errorEl.style.display = 'none';
+            });
+            itemSelect.classList.remove('is-invalid');
+            quantity.classList.remove('is-invalid');
+            rate.classList.remove('is-invalid');
+
+            // Validate and show errors
+            if (!itemSelect.value) {
                 isValid = false;
+                itemSelect.classList.add('is-invalid');
+                const errorEl = lineItem.querySelector('[data-field*="item_id"]');
+                if (errorEl) {
+                    errorEl.textContent = '{{ __("dashboard.item_required") }}';
+                    errorEl.style.display = 'block';
+                }
+            }
+
+            if (quantity.value < 1) {
+                isValid = false;
+                quantity.classList.add('is-invalid');
+                const errorEl = lineItem.querySelector('[data-field*="quantity"]');
+                if (errorEl) {
+                    errorEl.textContent = '{{ __("dashboard.quantity_must_be_at_least_1") }}';
+                    errorEl.style.display = 'block';
+                }
+            }
+
+            if (rate.value <= 0) {
+                isValid = false;
+                rate.classList.add('is-invalid');
+                const errorEl = lineItem.querySelector('[data-field*="rate"]');
+                if (errorEl) {
+                    errorEl.textContent = '{{ __("dashboard.rate_must_be_greater_than_0") }}';
+                    errorEl.style.display = 'block';
+                }
             }
         });
 
         if (!isValid) {
             e.preventDefault();
-            alert('{{ __("dashboard.please_fill_all_required_fields") }}');
             return false;
         }
 
@@ -481,6 +551,25 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.setAttribute('data-kt-indicator', 'on');
         submitBtn.disabled = true;
     });
+
+    // Display validation errors
+    if (window.validationErrors && Object.keys(window.validationErrors).length > 0) {
+        Object.keys(window.validationErrors).forEach(function(fieldName) {
+            const errorMessages = window.validationErrors[fieldName];
+            const errorElement = document.querySelector(`[data-field="${fieldName}"]`);
+
+            if (errorElement && errorMessages.length > 0) {
+                errorElement.textContent = errorMessages[0];
+                errorElement.style.display = 'block';
+
+                // Add error class to input
+                const input = errorElement.previousElementSibling;
+                if (input) {
+                    input.classList.add('is-invalid');
+                }
+            }
+        });
+    }
 });
 </script>
 @endpush

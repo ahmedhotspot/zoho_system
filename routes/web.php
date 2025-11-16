@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\FinancingTypeController;
+use App\Http\Controllers\CompanieController;
+use App\Jobs\SyncCompaniesFromAPI;
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -251,5 +254,34 @@ Route::prefix('crm/notes')->name('crm.notes.')->middleware('auth')->group(functi
     Route::post('/sync', [App\Http\Controllers\CrmNoteController::class, 'sync'])->name('sync');
 });
 
+// Financing Types Routes
+Route::prefix('financing-types')->name('financing-types.')->middleware('auth')->group(function () {
+    Route::get('/', [FinancingTypeController::class, 'index'])->name('index');
+    Route::get('/create', [FinancingTypeController::class, 'create'])->name('create');
+    Route::post('/', [FinancingTypeController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [FinancingTypeController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [FinancingTypeController::class, 'update'])->name('update');
+    Route::delete('/{id}', [FinancingTypeController::class, 'destroy'])->name('destroy');
+});
+
+// Companies Routes
+Route::prefix('companies')->name('companies.')->middleware('auth')->group(function () {
+    Route::get('/', [CompanieController::class, 'index'])->name('index');
+    Route::get('/create', [CompanieController::class, 'create'])->name('create');
+    Route::post('/', [CompanieController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [CompanieController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [CompanieController::class, 'update'])->name('update');
+    Route::delete('/{id}', [CompanieController::class, 'destroy'])->name('destroy');
+
+    // Sync companies from API
+    Route::get('/sync', function() {
+        try {
+           $job = new SyncCompaniesFromAPI();
+            $job->handle();
+            return redirect()->route('companies.index')->with('success', 'Companies sync job dispatched successfully!');
+        } catch (\Exception $e) {
+        }
+    })->name('sync');
+});
 
 });

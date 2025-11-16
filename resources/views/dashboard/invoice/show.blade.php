@@ -76,7 +76,7 @@
                 @php $invoiceStatus = strtolower($invoice['status'] ?? 'draft'); @endphp
 
                 <!--begin::Invoice URL button-->
-                @if(isset($invoice['invoice_url']) && $invoice['invoice_url'])
+                @if(isset($invoice['invoice_url']) && $invoice['invoice_url'] && $invoiceStatus == 'overdue')
                 <a href="{{ $invoice['invoice_url'] }}" target="_blank" class="btn btn-sm btn-flex btn-light-primary">
                     <i class="ki-duotone ki-external-link fs-5 me-1">
                         <span class="path1"></span>
@@ -86,18 +86,7 @@
                     </i>
                     {{ __('dashboard.view_invoice_url') }}
                 </a>
-                @else
-                <button type="button" class="btn btn-sm btn-flex btn-light-primary" onclick="window.print()">
-                    <i class="ki-duotone ki-printer fs-5 me-1">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                        <span class="path4"></span>
-                        <span class="path5"></span>
-                    </i>
-                    {{ __('dashboard.print_invoice') }}
-                </button>
-                @endif
+@endif
                 <!--end::Invoice URL button-->
 
                 @if($invoiceStatus === 'draft')

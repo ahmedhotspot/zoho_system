@@ -260,6 +260,44 @@
                 </div>
                 <!--end::Zoho CRM Dropdown-->
 
+                <!--begin::Settings Section-->
+                <div class="menu-item">
+                    <div class="menu-content pt-8 pb-2">
+                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">{{ __('dashboard.settings') }}</span>
+                    </div>
+                </div>
+
+                <!--begin::Financing Types-->
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('financing-types.*') ? 'active' : '' }}" href="{{ route('financing-types.index') }}">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-dollar fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">{{ __('dashboard.financing_types') }}</span>
+                    </a>
+                </div>
+                <!--end::Financing Types-->
+
+                <!--begin::Companies-->
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('companies.*') ? 'active' : '' }}" href="{{ route('companies.index') }}">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-office-bag fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">{{ __('dashboard.companies') }}</span>
+                    </a>
+                </div>
+                <!--end::Companies-->
+
             </div>
             <!--end::Menu-->
         </div>

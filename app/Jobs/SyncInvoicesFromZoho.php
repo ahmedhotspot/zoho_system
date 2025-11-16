@@ -83,6 +83,7 @@ class SyncInvoicesFromZoho implements ShouldQueue
             $invoiceData = [
                 'zoho_invoice_id' => $fullInvoice['invoice_id'],
                 'zoho_customer_id' => $fullInvoice['customer_id'] ?? null,
+                'invoice_url' => $fullInvoice['invoice_url'] ?? null,
                 'invoice_number' => $fullInvoice['invoice_number'],
                 'invoice_date' => Carbon::parse($fullInvoice['date']),
                 'due_date' => isset($fullInvoice['due_date']) ? Carbon::parse($fullInvoice['due_date']) : null,
