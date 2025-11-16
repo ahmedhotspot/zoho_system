@@ -73,7 +73,7 @@
                                 <!--end::Company Name-->
 
 
-                                    <div class="row mb-6">
+                                <div class="row mb-6">
                                     <label
                                         class="col-lg-3 col-form-label required fw-bold fs-6">{{ __('dashboard.financing_type_id') }}</label>
                                     <div class="col-lg-9">
@@ -83,7 +83,9 @@
                                             name="financing_type_id" required>
                                             <option value="" disabled selected>{{ __('dashboard.choose') }}</option>
                                             @foreach ($financing_types as $financing_type)
-                                                <option value="{{ $financing_type->id }}">{{ $financing_type->name }}
+                                                <option value="{{ $financing_type->id }}"
+                                                    {{ old('financing_type_id', isset($company) ? $company->financing_type_id : null) == $financing_type->id ? 'selected' : '' }}>
+                                                    {{ $financing_type->name }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -120,7 +122,7 @@
 
 
 
-                            
+
                                 <!--end::Contract Type-->
 
                                 <!--begin::Contract Value-->
