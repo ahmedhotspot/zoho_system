@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('user_id')->nullable();
+            $table->foreignId('financing_type_id')->nullable()->constrained('financing_types')->cascadeOnDelete()->cascadeOnUpdate();
             $table->enum('contract_type', ['percentage', 'fixed'])->default('fixed');
-            $table->integer('contract_value')->nullable();
+            $table->string('contract_value')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

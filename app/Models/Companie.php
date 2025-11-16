@@ -12,6 +12,7 @@ class Companie extends Model
         'user_id',
         'contract_type',
         'contract_value',
+        'financing_type_id',
         'is_active',
     ];
 
@@ -24,6 +25,10 @@ class Companie extends Model
         return $query->where('is_active', false);
     }
 
+    public function financing_type()
+    {
+        return $this->belongsTo(FinancingType::class,'financing_type_id');
+    }
 
 
 }

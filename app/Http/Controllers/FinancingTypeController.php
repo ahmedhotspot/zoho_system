@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Companie;
 use App\Models\FinancingType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -19,9 +20,9 @@ class FinancingTypeController extends Controller
             // Apply search filter
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('name->ar', 'like', "%{$search}%")
-                      ->orWhere('name->en', 'like', "%{$search}%");
+                        ->orWhere('name->en', 'like', "%{$search}%");
                 });
             }
 
@@ -39,23 +40,23 @@ class FinancingTypeController extends Controller
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'data' => $financingTypes
+                    'data' => $financingTypes,
                 ]);
             }
 
             return view('dashboard.financing-type.index', compact('financingTypes'));
 
         } catch (\Exception $e) {
-            Log::error('Error fetching financing types: ' . $e->getMessage());
+            Log::error('Error fetching financing types: '.$e->getMessage());
 
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Error fetching financing types'
+                    'message' => 'Error fetching financing types',
                 ], 500);
             }
 
-            return back()->with('error', 'Error fetching financing types: ' . $e->getMessage());
+            return back()->with('error', 'Error fetching financing types: '.$e->getMessage());
         }
     }
 
@@ -91,9 +92,10 @@ class FinancingTypeController extends Controller
                 ->with('success', __('dashboard.financing_type_created_successfully'));
 
         } catch (\Exception $e) {
-            Log::error('Error creating financing type: ' . $e->getMessage());
+            Log::error('Error creating financing type: '.$e->getMessage());
+
             return back()->withInput()
-                ->with('error', 'Error creating financing type: ' . $e->getMessage());
+                ->with('error', 'Error creating financing type: '.$e->getMessage());
         }
     }
 
@@ -104,10 +106,12 @@ class FinancingTypeController extends Controller
     {
         try {
             $financingType = FinancingType::findOrFail($id);
+
             return view('dashboard.financing-type.create', compact('financingType'));
 
         } catch (\Exception $e) {
-            Log::error('Error loading financing type: ' . $e->getMessage());
+            Log::error('Error loading financing type: '.$e->getMessage());
+
             return redirect()->route('financing-types.index')
                 ->with('error', 'Error loading financing type');
         }
@@ -126,7 +130,7 @@ class FinancingTypeController extends Controller
             ]);
 
             $financingType = FinancingType::findOrFail($id);
-            
+
             $financingType->update([
                 'name' => [
                     'ar' => $validated['name']['ar'],
@@ -139,9 +143,10 @@ class FinancingTypeController extends Controller
                 ->with('success', __('dashboard.financing_type_updated_successfully'));
 
         } catch (\Exception $e) {
-            Log::error('Error updating financing type: ' . $e->getMessage());
+            Log::error('Error updating financing type: '.$e->getMessage());
+
             return back()->withInput()
-                ->with('error', 'Error updating financing type: ' . $e->getMessage());
+                ->with('error', 'Error updating financing type: '.$e->getMessage());
         }
     }
 
@@ -151,16 +156,21 @@ class FinancingTypeController extends Controller
     public function destroy($id)
     {
         try {
-            $financingType = FinancingType::findOrFail($id);
-            $financingType->delete();
+            $check = Companie::where('financing_type_id', $id)->first();
+            if (! $check) {
+                $financingType = FinancingType::findOrFail($id);
+                $financingType->delete();
 
-            return redirect()->route('financing-types.index')
-                ->with('success', __('dashboard.financing_type_deleted_successfully'));
+                return redirect()->route('financing-types.index')
+                    ->with('success', __('dashboard.financing_type_deleted_successfully'));
+            }
 
+                return redirect()->route('financing-types.index')
+                    ->with('success', __('dashboard.financing_type_deleted_not_successfully'));
         } catch (\Exception $e) {
-            Log::error('Error deleting financing type: ' . $e->getMessage());
-            return back()->with('error', 'Error deleting financing type: ' . $e->getMessage());
+            Log::error('Error deleting financing type: '.$e->getMessage());
+
+            return back()->with('error', 'Error deleting financing type: '.$e->getMessage());
         }
     }
 }
-
