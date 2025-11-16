@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\Companie;
+use App\Models\Company;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
@@ -87,7 +87,7 @@ class SyncCompaniesFromAPI implements ShouldQueue
             }
 
             // Find existing company by user_id
-            $company = Companie::where('user_id', $apiCompany['user_id'])->first();
+            $company = Company::where('user_id', $apiCompany['user_id'])->first();
 
             if ($company) {
                 // Update existing company
@@ -104,7 +104,7 @@ class SyncCompaniesFromAPI implements ShouldQueue
                 ]);
             } else {
                 // Create new company
-                $company = Companie::create([
+                $company = Company::create([
                     'user_id' => $apiCompany['user_id'],
                     'name' => $apiCompany['company_name'],
                     'is_active' => 1, // Set as active by default
