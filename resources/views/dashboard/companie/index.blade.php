@@ -109,7 +109,7 @@
                                 </a>
                                 <!--end::Sync Button-->
                                 <!--begin::Add Button-->
-                               
+
                                 <!--end::Add Button-->
                                 <!--begin::Filter Menu-->
                                 <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
@@ -201,7 +201,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <span>{{$company->financing_type->name ?? ""}}</span>
+                                                <span>{{ $company->financing_type->name ?? '' }}</span>
                                             </td>
 
                                             <td>
@@ -211,11 +211,16 @@
                                             </td>
                                             <td>
                                                 <span>
-                                                    {{ $company->contract_type === 'percentage'
-                                                        ? $company->contract_value . '%'
-                                                        : number_format($company->contract_value) . ' ريال' }}
+                                                    @if ($company->contract_type === 'percentage')
+                                                        {{ $company->contract_value }}%
+                                                    @else
+                                                        {{ number_format($company->contract_value) }}
+                                                        <img src="{{ asset('assets/Saudi_Riyal_Symbol-1.png') }}" alt="currency"
+                                                            style="width:12px; margin-left:4px;">
+                                                    @endif
                                                 </span>
                                             </td>
+
 
                                             <!--end::Status-->
                                             <!--begin::Actions-->
