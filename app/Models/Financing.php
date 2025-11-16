@@ -17,6 +17,12 @@ class Financing extends Model
         'financing_type_id',
     ];
 
+        protected $casts = [
+        'price' => 'decimal:2',
+        'created_at' => 'datetime',
+
+    ];
+
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id', 'user_id');
