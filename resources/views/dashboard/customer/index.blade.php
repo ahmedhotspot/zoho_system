@@ -85,6 +85,7 @@
                         </button>
                         <!--end::Filter-->
                         <!--begin::Add Customer-->
+                        @can('create customers')
                         <a href="{{ route('customers.create') }}" class="btn btn-primary me-3">
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -94,6 +95,7 @@
                             </span>
                             {{ __('dashboard.add_new_customer') }}
                         </a>
+                        @endcan
                         <!--end::Add Customer-->
                         <!--begin::Sync Button-->
                         <button type="button" class="btn btn-light-primary" id="syncCustomersBtn">
@@ -263,25 +265,31 @@
                                     <!--begin::Menu-->
                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                         <!--begin::Menu item-->
+                                        @can('view customers')
                                         <div class="menu-item px-3">
                                             <a href="{{ route('customers.show', $customer->id) }}" class="menu-link px-3">
                                                 {{ __('dashboard.view') }}
                                             </a>
                                         </div>
+                                        @endcan
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
+                                        @can('edit customers')
                                         <div class="menu-item px-3">
                                             <a href="{{ route('customers.edit', $customer->id) }}" class="menu-link px-3">
                                                 {{ __('dashboard.edit') }}
                                             </a>
                                         </div>
+                                        @endcan
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
+                                        @can('delete customers')
                                         <div class="menu-item px-3">
                                             <a href="#" class="menu-link px-3 text-danger" data-customer-id="{{ $customer->id }}" onclick="deleteCustomer(event, this)">
                                                 {{ __('dashboard.delete') }}
                                             </a>
                                         </div>
+                                        @endcan
                                         <!--end::Menu item-->
                                     </div>
                                     <!--end::Menu-->

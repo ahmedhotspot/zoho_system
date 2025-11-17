@@ -99,6 +99,7 @@
                             </button>
                             <!--end::Filter-->
                             <!--begin::Add Button-->
+                            @can('create financing-types')
                             <a href="{{ route('financing-types.create') }}" class="btn btn-primary">
                                 <span class="svg-icon svg-icon-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -108,6 +109,7 @@
                                 </span>
                                 {{ __('dashboard.add_financing_type') }}
                             </a>
+                            @endcan
                             <!--end::Add Button-->
                             <!--begin::Filter Menu-->
                             <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
@@ -206,13 +208,16 @@
                                         <!--begin::Menu-->
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                             <!--begin::Menu item-->
+                                            @can('edit financing-types')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('financing-types.edit', $financingType->id) }}" class="menu-link px-3">
                                                     {{ __('dashboard.edit') }}
                                                 </a>
                                             </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
+                                            @can('delete financing-types')
                                             <div class="menu-item px-3">
                                                 <form action="{{ route('financing-types.destroy', $financingType->id) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('dashboard.confirm_delete') }}')">
                                                     @csrf
@@ -222,6 +227,7 @@
                                                     </button>
                                                 </form>
                                             </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                         </div>
                                         <!--end::Menu-->

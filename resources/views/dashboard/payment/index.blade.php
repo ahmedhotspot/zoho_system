@@ -120,6 +120,7 @@
                             </button>
                             <!--end::Sync-->
                             <!--begin::Add payment-->
+                            @can('create payments')
                             <a href="{{ route('payments.create') }}" class="btn btn-primary">
                                 <span class="svg-icon svg-icon-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -129,6 +130,7 @@
                                 </span>
                                 {{ __('dashboard.add_new_payment') }}
                             </a>
+                            @endcan
                             <!--end::Add payment-->
                         </div>
                         <!--end::Toolbar-->
@@ -207,19 +209,25 @@
                                         <!--begin::Menu-->
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                             <!--begin::Menu item-->
+                                            @can('view payments')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('payments.show', $payment->id) }}" class="menu-link px-3">{{ __('dashboard.view') }}</a>
                                             </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
+                                            @can('edit payments')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('payments.edit', $payment->id) }}" class="menu-link px-3">{{ __('dashboard.edit') }}</a>
                                             </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
+                                            @can('delete payments')
                                             <div class="menu-item px-3">
                                                 <a href="#" class="menu-link px-3 text-danger delete-payment" data-payment-id="{{ $payment->id }}" data-payment-number="{{ $payment->payment_number }}">{{ __('dashboard.delete') }}</a>
                                             </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                         </div>
                                         <!--end::Menu-->

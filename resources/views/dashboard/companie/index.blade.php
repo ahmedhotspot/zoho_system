@@ -256,14 +256,17 @@
                                                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4"
                                                     data-kt-menu="true">
                                                     <!--begin::Menu item-->
+                                                    @can('edit companies')
                                                     <div class="menu-item px-3">
                                                         <a href="{{ route('companies.edit', $company->id) }}"
                                                             class="menu-link px-3">
                                                             {{ __('dashboard.edit') }}
                                                         </a>
                                                     </div>
+                                                    @endcan
                                                     <!--end::Menu item-->
                                                     <!--begin::Menu item-->
+                                                    @can('delete companies')
                                                     <div class="menu-item px-3">
                                                         <form action="{{ route('companies.destroy', $company->id) }}"
                                                             method="POST" class="d-inline"
@@ -276,6 +279,7 @@
                                                             </button>
                                                         </form>
                                                     </div>
+                                                    @endcan
                                                     <!--end::Menu item-->
                                                 </div>
                                                 <!--end::Menu-->

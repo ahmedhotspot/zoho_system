@@ -113,6 +113,7 @@
                             </button>
 
                             <!-- Add New Button -->
+                            @can('create calls')
                             <a href="{{ route('crm.calls.create') }}" class="btn btn-primary">
                                 <span class="svg-icon svg-icon-2">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -122,6 +123,7 @@
                                 </span>
                                 {{ __('dashboard.add_new_call') }}
                             </a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -206,12 +208,17 @@
                                                 </span>
                                             </a>
                                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
+                                                @can('view calls')
                                                 <div class="menu-item px-3">
                                                     <a href="{{ route('crm.calls.show', $call) }}" class="menu-link px-3">{{ __('dashboard.view') }}</a>
                                                 </div>
+                                                @endcan
+                                                @can('edit calls')
                                                 <div class="menu-item px-3">
                                                     <a href="{{ route('crm.calls.edit', $call) }}" class="menu-link px-3">{{ __('dashboard.edit') }}</a>
                                                 </div>
+                                                @endcan
+                                                @can('delete calls')
                                                 <div class="menu-item px-3">
                                                     <form action="{{ route('crm.calls.destroy', $call) }}" method="POST" class="delete-form">
                                                         @csrf
@@ -219,6 +226,7 @@
                                                         <button type="submit" class="menu-link px-3 w-100 text-start text-danger border-0 bg-transparent">{{ __('dashboard.delete') }}</button>
                                                     </form>
                                                 </div>
+                                                @endcan
                                             </div>
                                         </td>
                                     </tr>

@@ -156,6 +156,7 @@
                             </button>
                             <!--end::Sync from Zoho-->
                             <!--begin::Add event-->
+                            @can('create events')
                             <a href="{{ route('crm.events.create') }}" class="btn btn-primary">
                                 <span class="svg-icon svg-icon-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -165,6 +166,7 @@
                                 </span>
                                 {{ __('dashboard.add_new_event') }}
                             </a>
+                            @endcan
                             <!--end::Add event-->
                         </div>
                         <!--end::Toolbar-->
@@ -271,6 +273,7 @@
                                         <!--begin::Menu-->
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
                                             <!--begin::Menu item-->
+                                            @can('view events')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('crm.events.show', $event) }}" class="menu-link px-3">
                                                     <i class="ki-duotone ki-eye fs-6 me-2">
@@ -281,8 +284,10 @@
                                                     {{ __('dashboard.view_details') }}
                                                 </a>
                                             </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
+                                            @can('edit events')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('crm.events.edit', $event) }}" class="menu-link px-3">
                                                     <i class="ki-duotone ki-pencil fs-6 me-2">
@@ -292,8 +297,10 @@
                                                     {{ __('dashboard.edit') }}
                                                 </a>
                                             </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
+                                            @can('delete events')
                                             <div class="menu-item px-3">
                                                 <form action="{{ route('crm.events.destroy', $event) }}" method="POST" class="d-inline delete-event-form">
                                                     @csrf
@@ -310,6 +317,7 @@
                                                     </a>
                                                 </form>
                                             </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                         </div>
                                         <!--end::Menu-->

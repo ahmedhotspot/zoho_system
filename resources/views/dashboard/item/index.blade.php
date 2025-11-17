@@ -146,6 +146,7 @@
                             </button>
                             <!--end::Sync-->
                             <!--begin::Add item-->
+                            @can('create items')
                             <a href="{{ route('items.create') }}" class="btn btn-primary">
                                 <span class="svg-icon svg-icon-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -155,6 +156,7 @@
                                 </span>
                                 {{ __('dashboard.add_new_item') }}
                             </a>
+                            @endcan
                             <!--end::Add item-->
                         </div>
                         <!--end::Toolbar-->
@@ -238,25 +240,31 @@
                                         <!--begin::Menu-->
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                             <!--begin::Menu item-->
+                                            @can('view items')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('items.show', $item->id) }}" class="menu-link px-3">
                                                     {{ __('dashboard.view') }}
                                                 </a>
                                             </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
+                                            @can('edit items')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('items.edit', $item->id) }}" class="menu-link px-3">
                                                     {{ __('dashboard.edit') }}
                                                 </a>
                                             </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
+                                            @can('delete items')
                                             <div class="menu-item px-3">
                                                 <a href="#" class="menu-link px-3 text-danger" data-item-id="{{ $item->id }}" onclick="deleteItem(event, this)">
                                                     {{ __('dashboard.delete') }}
                                                 </a>
                                             </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                         </div>
                                         <!--end::Menu-->
@@ -376,7 +384,7 @@
     function deleteItem(event, element) {
         event.preventDefault();
         const itemId = element.getAttribute('data-item-id');
-        
+
         Swal.fire({
             title: "{{ __('dashboard.delete_item') }}",
             text: "{{ __('dashboard.delete_item_confirmation') }}",
@@ -394,20 +402,20 @@
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = `/items/${itemId}`;
-                
+
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
                 const csrfInput = document.createElement('input');
                 csrfInput.type = 'hidden';
                 csrfInput.name = '_token';
                 csrfInput.value = csrfToken;
                 form.appendChild(csrfInput);
-                
+
                 const methodInput = document.createElement('input');
                 methodInput.type = 'hidden';
                 methodInput.name = '_method';
                 methodInput.value = 'DELETE';
                 form.appendChild(methodInput);
-                
+
                 document.body.appendChild(form);
                 form.submit();
             }

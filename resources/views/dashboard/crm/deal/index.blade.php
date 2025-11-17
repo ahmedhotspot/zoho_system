@@ -63,10 +63,12 @@
                             </button>
 
                             <!-- Add Deal Button -->
+                            @can('create deals')
                             <a href="{{ route('crm.deals.create') }}" class="btn btn-primary">
                                 <i class="ki-duotone ki-plus fs-2"></i>
                                 {{ __('dashboard.add_new_deal') }}
                             </a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -119,15 +121,21 @@
                                             <i class="ki-duotone ki-down fs-5 ms-1"></i>
                                         </a>
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
+                                            @can('view deals')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('crm.deals.show', $deal) }}" class="menu-link px-3">{{ __('dashboard.view') }}</a>
                                             </div>
+                                            @endcan
+                                            @can('edit deals')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('crm.deals.edit', $deal) }}" class="menu-link px-3">{{ __('dashboard.edit') }}</a>
                                             </div>
+                                            @endcan
+                                            @can('delete deals')
                                             <div class="menu-item px-3">
                                                 <a href="#" class="menu-link px-3 delete-deal" data-deal-id="{{ $deal->id }}" data-deal-name="{{ $deal->deal_name }}">{{ __('dashboard.delete') }}</a>
                                             </div>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>

@@ -54,10 +54,12 @@
                                 {{ __('dashboard.sync_from_zoho') }}
                             </button>
 
+                            @can('create contacts')
                             <a href="{{ route('crm.contacts.create') }}" class="btn btn-primary">
                                 <i class="ki-duotone ki-plus fs-2"></i>
                                 {{ __('dashboard.add_new_contact') }}
                             </a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -93,25 +95,31 @@
                                                     {{ __('dashboard.actions') }}
                                                 </button>
                                                 <ul class="dropdown-menu">
+                                                    @can('view contacts')
                                                     <li>
                                                         <a class="dropdown-item" href="{{ route('crm.contacts.show', $contact) }}">
                                                             <i class="ki-duotone ki-eye fs-5 me-2"></i>
                                                             {{ __('dashboard.view') }}
                                                         </a>
                                                     </li>
+                                                    @endcan
+                                                    @can('edit contacts')
                                                     <li>
                                                         <a class="dropdown-item" href="{{ route('crm.contacts.edit', $contact) }}">
                                                             <i class="ki-duotone ki-pencil fs-5 me-2"></i>
                                                             {{ __('dashboard.edit') }}
                                                         </a>
                                                     </li>
+                                                    @endcan
                                                     <li><hr class="dropdown-divider"></li>
+                                                    @can('delete contacts')
                                                     <li>
                                                         <a class="dropdown-item text-danger delete-contact" href="#" data-id="{{ $contact->id }}">
                                                             <i class="ki-duotone ki-trash fs-5 me-2"></i>
                                                             {{ __('dashboard.delete') }}
                                                         </a>
                                                     </li>
+                                                    @endcan
                                                 </ul>
                                             </div>
                                         </td>

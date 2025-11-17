@@ -56,10 +56,12 @@
                             </button>
 
                             <!-- Add Note Button -->
+                            @can('create notes')
                             <a href="{{ route('crm.notes.create') }}" class="btn btn-primary">
                                 <i class="ki-duotone ki-plus fs-2"></i>
                                 {{ __('dashboard.add_new_note') }}
                             </a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -101,21 +103,27 @@
                                                 <i class="ki-duotone ki-down fs-5 ms-1"></i>
                                             </button>
                                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-150px py-4" data-kt-menu="true">
+                                                @can('view notes')
                                                 <div class="menu-item px-3">
                                                     <a href="{{ route('crm.notes.show', $note) }}" class="menu-link px-3">
                                                         {{ __('dashboard.view') }}
                                                     </a>
                                                 </div>
+                                                @endcan
+                                                @can('edit notes')
                                                 <div class="menu-item px-3">
                                                     <a href="{{ route('crm.notes.edit', $note) }}" class="menu-link px-3">
                                                         {{ __('dashboard.edit') }}
                                                     </a>
                                                 </div>
+                                                @endcan
+                                                @can('delete notes')
                                                 <div class="menu-item px-3">
                                                     <a href="#" class="menu-link px-3 delete-note" data-note-id="{{ $note->id }}">
                                                         {{ __('dashboard.delete') }}
                                                     </a>
                                                 </div>
+                                                @endcan
                                             </div>
                                         </td>
                                     </tr>

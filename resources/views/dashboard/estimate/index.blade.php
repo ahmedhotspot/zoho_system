@@ -122,6 +122,7 @@
                             </button>
                             <!--end::Sync-->
                             <!--begin::Add estimate-->
+                            @can('create estimates')
                             <a href="{{ route('estimates.create') }}" class="btn btn-primary">
                                 <span class="svg-icon svg-icon-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -131,6 +132,7 @@
                                 </span>
                                 {{ __('dashboard.add_new_estimate') }}
                             </a>
+                            @endcan
                             <!--end::Add estimate-->
                         </div>
                         <!--end::Toolbar-->
@@ -185,19 +187,25 @@
                                     <!--begin::Menu-->
                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                         <!--begin::Menu item-->
+                                        @can('view estimates')
                                         <div class="menu-item px-3">
                                             <a href="{{ route('estimates.show', $estimate->id) }}" class="menu-link px-3">{{ __('dashboard.view') }}</a>
                                         </div>
+                                        @endcan
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
+                                        @can('edit estimates')
                                         <div class="menu-item px-3">
                                             <a href="{{ route('estimates.edit', $estimate->id) }}" class="menu-link px-3">{{ __('dashboard.edit') }}</a>
                                         </div>
+                                        @endcan
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
+                                        @can('delete estimates')
                                         <div class="menu-item px-3">
                                             <a href="#" class="menu-link px-3 delete-estimate" data-estimate-id="{{ $estimate->id }}">{{ __('dashboard.delete') }}</a>
                                         </div>
+                                        @endcan
                                         <!--end::Menu item-->
                                     </div>
                                     <!--end::Menu-->
@@ -234,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Search functionality
     const searchInput = document.getElementById('search');
     let searchTimeout;
-    
+
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(function() {
@@ -255,11 +263,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function applyFilters() {
         const search = searchInput.value;
         const status = document.getElementById('filter_status').value;
-        
+
         const url = new URL(window.location.href);
         url.searchParams.set('search', search);
         url.searchParams.set('status', status);
-        
+
         window.location.href = url.toString();
     }
 

@@ -64,10 +64,12 @@
                             </button>
 
                             <!-- Add New Button -->
+                            @can('create tasks')
                             <a href="{{ route('crm.tasks.create') }}" class="btn btn-sm btn-primary">
                                 <i class="ki-duotone ki-plus fs-2"></i>
                                 {{ __('dashboard.add_new_task') }}
                             </a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -129,18 +131,23 @@
                                                     {{ __('dashboard.actions') }}
                                                 </button>
                                                 <ul class="dropdown-menu">
+                                                    @can('view tasks')
                                                     <li>
                                                         <a class="dropdown-item" href="{{ route('crm.tasks.show', $task) }}">
                                                             <i class="ki-duotone ki-eye fs-5 me-2"></i>
                                                             {{ __('dashboard.view') }}
                                                         </a>
                                                     </li>
+                                                    @endcan
+                                                    @can('edit tasks')
                                                     <li>
                                                         <a class="dropdown-item" href="{{ route('crm.tasks.edit', $task) }}">
                                                             <i class="ki-duotone ki-pencil fs-5 me-2"></i>
                                                             {{ __('dashboard.edit') }}
                                                         </a>
                                                     </li>
+                                                    @endcan
+                                                    @can('delete tasks')
                                                     <li>
                                                         <form action="{{ route('crm.tasks.destroy', $task) }}" method="POST" class="d-inline delete-form">
                                                             @csrf
@@ -151,6 +158,7 @@
                                                             </button>
                                                         </form>
                                                     </li>
+                                                    @endcan
                                                 </ul>
                                             </div>
                                         </td>
@@ -203,12 +211,12 @@
         const search = document.getElementById('search-input').value;
         const status = document.getElementById('status-filter').value;
         const priority = document.getElementById('priority-filter').value;
-        
+
         const params = new URLSearchParams();
         if (search) params.append('search', search);
         if (status) params.append('status', status);
         if (priority) params.append('priority', priority);
-        
+
         window.location.href = '{{ route("crm.tasks.index") }}' + (params.toString() ? '?' + params.toString() : '');
     }
 
@@ -216,10 +224,10 @@
     document.getElementById('sync-btn').addEventListener('click', function() {
         const btn = this;
         const originalHtml = btn.innerHTML;
-        
+
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{{ __("dashboard.syncing") }}...';
-        
+
         fetch('{{ route("crm.tasks.sync") }}', {
             method: 'POST',
             headers: {
@@ -260,7 +268,7 @@
     document.querySelectorAll('.delete-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             Swal.fire({
                 title: '{{ __("dashboard.are_you_sure") }}',
                 text: '{{ __("dashboard.delete_task_confirmation") }}',

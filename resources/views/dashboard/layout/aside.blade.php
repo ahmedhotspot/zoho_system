@@ -66,6 +66,7 @@
                     </span>
                     <div class="menu-sub menu-sub-accordion">
                         <!--begin::Invoices-->
+                        @can('view invoices')
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}" href="{{ route('invoices.index') }}">
                                 <span class="menu-bullet">
@@ -74,9 +75,11 @@
                                 <span class="menu-title">{{ __('dashboard.invoices') }}</span>
                             </a>
                         </div>
+                        @endcan
                         <!--end::Invoices-->
 
                         <!--begin::Customers-->
+                        @can('view customers')
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('customers.*') ? 'active' : '' }}" href="{{ route('customers.index') }}">
                                 <span class="menu-bullet">
@@ -85,6 +88,7 @@
                                 <span class="menu-title">{{ __('dashboard.customers') }}</span>
                             </a>
                         </div>
+                        @endcan
                         <!--end::Customers-->
 
                         <!--begin::Items-->
@@ -268,6 +272,7 @@
                 </div>
 
                 <!--begin::Financing Types-->
+                @can('view financing-types')
                 <div class="menu-item">
                     <a class="menu-link {{ request()->routeIs('financing-types.*') ? 'active' : '' }}" href="{{ route('financing-types.index') }}">
                         <span class="menu-icon">
@@ -280,9 +285,11 @@
                         <span class="menu-title">{{ __('dashboard.financing_types') }}</span>
                     </a>
                 </div>
+                @endcan
                 <!--end::Financing Types-->
 
                 <!--begin::Companies-->
+                @can('view companies')
                 <div class="menu-item">
                     <a class="menu-link {{ request()->routeIs('companies.*') ? 'active' : '' }}" href="{{ route('companies.index') }}">
                         <span class="menu-icon">
@@ -296,7 +303,76 @@
                         <span class="menu-title">{{ __('dashboard.companies') }}</span>
                     </a>
                 </div>
+                @endcan
                 <!--end::Companies-->
+
+                <!--begin::Financings-->
+                @can('view financings')
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('financings.*') ? 'active' : '' }}" href="{{ route('financings.index') }}">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-chart-line-up fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">{{ __('financing.financings') }}</span>
+                    </a>
+                </div>
+                @endcan
+                <!--end::Financings-->
+
+                <!--begin::Roles-->
+                @can('view roles')
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-shield-tick fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">{{ __('dashboard.roles') }}</span>
+                    </a>
+                </div>
+                @endcan
+                <!--end::Roles-->
+
+                <!--begin::Permissions-->
+                @can('view permissions')
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}" href="{{ route('permissions.index') }}">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-lock fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">{{ __('dashboard.permissions') }}</span>
+                    </a>
+                </div>
+                @endcan
+                <!--end::Permissions-->
+
+                <!--begin::Users-->
+                @can('view users')
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-profile-user fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">{{ __('dashboard.users') }}</span>
+                    </a>
+                </div>
+                @endcan
+                <!--end::Users-->
 
             </div>
             <!--end::Menu-->

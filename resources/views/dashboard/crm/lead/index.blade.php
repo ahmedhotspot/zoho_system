@@ -53,11 +53,12 @@
                                 </i>
                                 {{ __('dashboard.sync_from_zoho') }}
                             </button>
-
+                            @can('create leads')
                             <a href="{{ route('crm.leads.create') }}" class="btn btn-primary">
                                 <i class="ki-duotone ki-plus fs-2"></i>
                                 {{ __('dashboard.add_new_lead') }}
                             </a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -105,28 +106,36 @@
                                                 <i class="ki-duotone ki-down fs-5 ms-1"></i>
                                             </button>
                                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-150px py-4" data-kt-menu="true">
+                                                @can('view leads')
                                                 <div class="menu-item px-3">
                                                     <a href="{{ route('crm.leads.show', $lead) }}" class="menu-link px-3">
                                                         {{ __('dashboard.view') }}
                                                     </a>
                                                 </div>
+                                                @endcan
+                                                @can('edit leads')
                                                 <div class="menu-item px-3">
                                                     <a href="{{ route('crm.leads.edit', $lead) }}" class="menu-link px-3">
                                                         {{ __('dashboard.edit') }}
                                                     </a>
                                                 </div>
+                                                @endcan
                                                 @if(!$lead->is_converted)
+                                                @can('edit leads')
                                                 <div class="menu-item px-3">
                                                     <a href="#" class="menu-link px-3 convert-lead" data-lead-id="{{ $lead->id }}">
                                                         {{ __('dashboard.convert_lead') }}
                                                     </a>
                                                 </div>
+                                                @endcan
                                                 @endif
+                                                @can('delete leads')
                                                 <div class="menu-item px-3">
                                                     <a href="#" class="menu-link px-3 delete-lead" data-lead-id="{{ $lead->id }}">
                                                         {{ __('dashboard.delete') }}
                                                     </a>
                                                 </div>
+                                                @endcan
                                             </div>
                                         </td>
                                     </tr>

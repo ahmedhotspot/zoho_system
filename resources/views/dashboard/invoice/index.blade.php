@@ -146,6 +146,7 @@
                                 </button>
                                 <!--end::Sync from Zoho-->
                                 <!--begin::Add invoice-->
+                                @can('create invoices')
                                 <a href="{{ route('invoices.create') }}" class="btn btn-primary">
                                     <span class="svg-icon svg-icon-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -155,6 +156,7 @@
                                     </span>
                                     {{ __('dashboard.add_invoice') }}
                                 </a>
+                                @endcan
                                 <!--end::Add invoice-->
                             </div>
                             <!--end::Toolbar-->
@@ -285,6 +287,7 @@
                                             <!--begin::Menu-->
                                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
                                                 <!--begin::Menu item-->
+                                                @can('view invoices')
                                                 <div class="menu-item px-3">
                                                     <a href="{{ route('invoices.show', $invoice['invoice_id'] ?? $invoice['id']) }}" class="menu-link px-3">
                                                         <i class="ki-duotone ki-eye fs-6 me-2">
@@ -295,10 +298,12 @@
                                                         {{ __('dashboard.view_details') }}
                                                     </a>
                                                 </div>
+                                                @endcan
                                                 <!--end::Menu item-->
                                                 @php $invoiceStatus = strtolower($invoice['status'] ?? 'draft'); @endphp
                                                 @if($invoiceStatus === 'draft')
                                                 <!--begin::Menu item-->
+                                                @can('edit invoices')
                                                 <div class="menu-item px-3">
                                                     <a href="{{ route('invoices.edit', $invoice['invoice_id'] ?? $invoice['id']) }}" class="menu-link px-3">
                                                         <i class="ki-duotone ki-pencil fs-6 me-2">
@@ -308,6 +313,7 @@
                                                         {{ __('dashboard.edit') }}
                                                     </a>
                                                 </div>
+                                                @endcan
                                                 <!--end::Menu item-->
                                                 <!--begin::Menu item-->
                                                 <div class="menu-item px-3">
@@ -349,6 +355,7 @@
                                                 @endif
                                                 @if($invoiceStatus === 'draft')
                                                 <!--begin::Menu item-->
+                                                @can('delete invoices')
                                                 <div class="menu-item px-3">
                                                     <a href="#" class="menu-link px-3 text-danger delete-invoice-btn" data-invoice-id="{{ $invoice['invoice_id'] ?? $invoice['id'] }}">
                                                         <i class="ki-duotone ki-trash fs-6 me-2">
@@ -361,6 +368,7 @@
                                                         {{ __('dashboard.delete') }}
                                                     </a>
                                                 </div>
+                                                @endcan
                                                 <!--end::Menu item-->
                                                 @endif
                                             </div>
@@ -379,11 +387,15 @@
                                                     </i>
                                                 </div>
                                                 <div class="text-gray-400 fs-4 fw-bold mb-2">{{ __('dashboard.no_invoices_found') }}</div>
+                                                                                @can('create invoices')
+
                                                 <div class="text-gray-600 mb-5">{{ __('dashboard.start_by_creating_first_invoice') }}</div>
                                                 <a href="{{ route('invoices.create') }}" class="btn btn-primary">
                                                     {{ __('dashboard.add_invoice') }}
+
                                                 </a>
                                             </div>
+                                            @endcan
                                         </td>
                                     </tr>
                                     @endforelse
