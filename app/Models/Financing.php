@@ -32,4 +32,9 @@ class Financing extends Model
     {
         return $this->belongsTo(Company::class, 'financing_type_id');
     }
+
+    public function priceHistories()
+    {
+        return $this->hasMany(FinancingPriceHistory::class);
+    }
 }

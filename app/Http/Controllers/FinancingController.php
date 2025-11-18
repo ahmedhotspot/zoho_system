@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Financing;
 use App\Models\Company;
 use App\Models\FinancingType;
+use App\Models\FinancingPriceHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class FinancingController extends Controller
 {
@@ -95,8 +98,80 @@ class FinancingController extends Controller
         $company = Company::where('user_id', $financing->company_id)
             ->where('financing_type_id', $financing->financing_type_id)
             ->first();
-        return view('dashboard.financings.show', compact('financing', 'company'));
+
+        // Get price history ordered by newest first
+        $priceHistory = FinancingPriceHistory::where('financing_id', $id)
+            ->with(['user', 'company'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('dashboard.financings.show', compact('financing', 'company', 'priceHistory'));
     }
 
+    /**
+     * Update the price of a financing and create price history record.
+     */
+    public function updatePrice(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'new_price' => 'required|numeric|min:0',
+            'notes' => 'nullable|string|max:1000',
+        ], [
+            'new_price.required' => __('financing.new_price_required'),
+            'new_price.numeric' => __('financing.new_price_must_be_number'),
+            'new_price.min' => __('financing.new_price_must_be_positive'),
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $financing = Financing::findOrFail($id);
+            $oldPrice = $financing->price;
+            $newPrice = $validated['new_price'];
+
+            // Check if price actually changed
+            if ($oldPrice == $newPrice) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('financing.price_not_changed')
+                ], 400);
+            }
+
+            // Create price history record
+            FinancingPriceHistory::create([
+                'financing_id' => $financing->id,
+                'company_id' => $financing->company_id,
+                'user_id' => Auth::id(),
+                'old_price' => $oldPrice,
+                'new_price' => $newPrice,
+                'notes' => $validated['notes'] ?? null,
+            ]);
+
+            // Update financing price
+            $financing->update([
+                'price' => $newPrice
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => __('financing.price_updated_successfully'),
+                'data' => [
+                    'old_price' => number_format($oldPrice, 2),
+                    'new_price' => number_format($newPrice, 2),
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating financing price: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => __('financing.error_updating_price')
+            ], 500);
+        }
+    }
 
 }

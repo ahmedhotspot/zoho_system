@@ -28,8 +28,12 @@ return [
     // Actions
     'view_details' => 'عرض التفاصيل',
     'edit' => 'تعديل',
+    'edit_price' => 'تعديل السعر',
     'delete' => 'حذف',
     'confirm_delete' => 'هل أنت متأكد من حذف هذا التمويل؟',
+    'cancel' => 'إلغاء',
+    'loading' => 'جاري التحميل',
+    'ok' => 'موافق',
 
     // Messages
     'no_financings_found' => 'لا توجد تمويلات',
@@ -74,4 +78,22 @@ return [
     'updated_at' => 'تاريخ التحديث',
     'time_elapsed' => 'الوقت المنقضي',
     'back_to_list' => 'العودة للقائمة',
+
+    // Price Update
+    'old_price' => 'السعر القديم',
+    'new_price' => 'السعر الجديد',
+    'current_price' => 'السعر الحالي',
+    'update_price' => 'تحديث السعر',
+    'price_history' => 'سجل الأسعار',
+    'price_updated_by' => 'تم التحديث بواسطة',
+    'price_updated_at' => 'تاريخ التحديث',
+    'notes' => 'ملاحظات',
+    'optional_notes' => 'ملاحظات اختيارية',
+    'enter_new_price' => 'أدخل السعر الجديد',
+    'price_updated_successfully' => 'تم تحديث السعر بنجاح',
+    'error_updating_price' => 'حدث خطأ أثناء تحديث السعر',
+    'price_not_changed' => 'السعر الجديد مطابق للسعر الحالي',
+    'new_price_required' => 'حقل السعر الجديد مطلوب',
+    'new_price_must_be_number' => 'السعر الجديد يجب أن يكون رقماً',
+    'new_price_must_be_positive' => 'السعر الجديد يجب أن يكون رقماً موجباً',
 ];

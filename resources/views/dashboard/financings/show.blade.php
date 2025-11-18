@@ -193,6 +193,85 @@
                         </div>
                     </div>
 
+                    <!-- Price History -->
+                    @if($priceHistory && $priceHistory->count() > 0)
+                    <div class="row mb-8">
+                        <div class="col-md-12">
+                            <h4 class="mb-5">
+                                <i class="ki-duotone ki-chart-line-up fs-2 me-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>
+                                {{ __('financing.price_history') }}
+                            </h4>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-row-bordered table-row-gray-300 align-middle gs-0 gy-3">
+                                    <thead>
+                                        <tr class="fw-bold text-muted bg-light">
+                                            <th class="min-w-50px">#</th>
+                                            <th class="min-w-120px">{{ __('financing.old_price') }}</th>
+                                            <th class="min-w-120px">{{ __('financing.new_price') }}</th>
+                                            <th class="min-w-150px">{{ __('financing.price_updated_by') }}</th>
+                                            <th class="min-w-120px">{{ __('financing.company') }}</th>
+                                            <th class="min-w-150px">{{ __('financing.price_updated_at') }}</th>
+                                            <th class="min-w-200px">{{ __('financing.notes') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($priceHistory as $index => $history)
+                                        <tr>
+                                            <td>
+                                                <span class="text-dark fw-bold fs-6">{{ $index + 1 }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-light-danger fs-7">
+                                                    {{ number_format($history->old_price, 2) }} {{ __('financing.sar') }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-light-success fs-7">
+                                                    {{ number_format($history->new_price, 2) }} {{ __('financing.sar') }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="symbol symbol-circle symbol-25px me-2">
+                                                        <div class="symbol-label bg-light-primary">
+                                                            <span class="text-primary fw-bold">
+                                                                {{ substr($history->user->name ?? 'N/A', 0, 1) }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-dark fw-bold">{{ $history->user->name ?? 'N/A' }}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-gray-800">{{ $history->company->name ?? '-' }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-dark fw-bold">{{ $history->created_at->format('Y-m-d') }}</div>
+                                                <div class="text-muted fs-7">{{ $history->created_at->format('H:i:s') }}</div>
+                                            </td>
+                                            <td>
+                                                @if($history->notes)
+                                                    <span class="text-gray-800">{{ $history->notes }}</span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Additional Information -->
                     <div class="row">
                         <div class="col-md-12">
@@ -233,7 +312,7 @@
                         </a>
                     </div>
                     <div>
-                     
+
 
                     </div>
                 </div>

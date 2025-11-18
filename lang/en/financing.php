@@ -28,8 +28,12 @@ return [
     // Actions
     'view_details' => 'View Details',
     'edit' => 'Edit',
+    'edit_price' => 'Edit Price',
     'delete' => 'Delete',
     'confirm_delete' => 'Are you sure you want to delete this financing?',
+    'cancel' => 'Cancel',
+    'loading' => 'Loading',
+    'ok' => 'OK',
 
     // Messages
     'no_financings_found' => 'No financings found',
@@ -74,4 +78,22 @@ return [
     'updated_at' => 'Updated At',
     'time_elapsed' => 'Time Elapsed',
     'back_to_list' => 'Back to List',
+
+    // Price Update
+    'old_price' => 'Old Price',
+    'new_price' => 'New Price',
+    'current_price' => 'Current Price',
+    'update_price' => 'Update Price',
+    'price_history' => 'Price History',
+    'price_updated_by' => 'Updated By',
+    'price_updated_at' => 'Updated At',
+    'notes' => 'Notes',
+    'optional_notes' => 'Optional Notes',
+    'enter_new_price' => 'Enter New Price',
+    'price_updated_successfully' => 'Price updated successfully',
+    'error_updating_price' => 'Error updating price',
+    'price_not_changed' => 'The new price is the same as the current price',
+    'new_price_required' => 'The new price field is required',
+    'new_price_must_be_number' => 'The new price must be a number',
+    'new_price_must_be_positive' => 'The new price must be a positive number',
 ];

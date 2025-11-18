@@ -246,7 +246,21 @@
                                             </div>
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
-
+                                            @can('edit financings')
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3 edit-price-btn"
+                                                   data-financing-id="{{ $financing->id }}"
+                                                   data-current-price="{{ $financing->price }}"
+                                                   data-financing-name="{{ $financing->name }}">
+                                                    <i class="ki-duotone ki-dollar fs-6 me-2">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                        <span class="path3"></span>
+                                                    </i>
+                                                    {{ __('financing.edit_price') }}
+                                                </a>
+                                            </div>
+                                            @endcan
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
                                             <div class="menu-item px-3">
@@ -281,7 +295,7 @@
                                             </div>
                                             <div class="text-gray-400 fs-4 fw-bold mb-2">{{ __('financing.no_financings_found') }}</div>
                                             <div class="text-gray-600 mb-5">{{ __('financing.start_by_creating_first_financing') }}</div>
-                                       
+
                                         </div>
                                     </td>
                                 </tr>
@@ -311,6 +325,74 @@
     </div>
     <!--end::Post-->
 </div>
+
+<!--begin::Edit Price Modal-->
+<div class="modal fade" id="editPriceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-650px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="fw-bolder">{{ __('financing.edit_price') }}</h2>
+                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                    <i class="ki-duotone ki-cross fs-1">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                    </i>
+                </div>
+            </div>
+            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                <form id="editPriceForm">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" id="financing_id" name="financing_id">
+
+                    <!--begin::Financing Name-->
+                    <div class="mb-7">
+                        <label class="fs-6 fw-bold mb-2">{{ __('financing.name') }}</label>
+                        <div class="fs-5 text-gray-800" id="financing_name_display"></div>
+                    </div>
+                    <!--end::Financing Name-->
+
+                    <!--begin::Current Price-->
+                    <div class="mb-7">
+                        <label class="fs-6 fw-bold mb-2">{{ __('financing.current_price') }}</label>
+                        <div class="fs-4 fw-bolder text-primary" id="current_price_display"></div>
+                    </div>
+                    <!--end::Current Price-->
+
+                    <!--begin::New Price-->
+                    <div class="mb-7">
+                        <label class="required fs-6 fw-bold mb-2">{{ __('financing.new_price') }}</label>
+                        <input type="number" step="0.01" min="0" class="form-control form-control-solid"
+                               id="new_price" name="new_price" placeholder="{{ __('financing.enter_new_price') }}" required />
+                        <div class="invalid-feedback" id="new_price_error"></div>
+                    </div>
+                    <!--end::New Price-->
+
+                    <!--begin::Notes-->
+                    <div class="mb-7">
+                        <label class="fs-6 fw-bold mb-2">{{ __('financing.notes') }}</label>
+                        <textarea class="form-control form-control-solid" rows="3"
+                                  id="notes" name="notes" placeholder="{{ __('financing.optional_notes') }}"></textarea>
+                    </div>
+                    <!--end::Notes-->
+
+                    <!--begin::Actions-->
+                    <div class="text-center pt-15">
+                        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">{{ __('financing.cancel') }}</button>
+                        <button type="submit" class="btn btn-primary" id="submitPriceBtn">
+                            <span class="indicator-label">{{ __('financing.update_price') }}</span>
+                            <span class="indicator-progress">{{ __('financing.loading') }}...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
+                    <!--end::Actions-->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end::Edit Price Modal-->
 
 @push('scripts')
 <script>
@@ -394,6 +476,114 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Edit Price functionality
+    const editPriceButtons = document.querySelectorAll('.edit-price-btn');
+    const editPriceModal = new bootstrap.Modal(document.getElementById('editPriceModal'));
+    const editPriceForm = document.getElementById('editPriceForm');
+    const submitPriceBtn = document.getElementById('submitPriceBtn');
+
+    editPriceButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const financingId = this.getAttribute('data-financing-id');
+            const currentPrice = this.getAttribute('data-current-price');
+            const financingName = this.getAttribute('data-financing-name');
+
+            // Set modal data
+            document.getElementById('financing_id').value = financingId;
+            document.getElementById('financing_name_display').textContent = financingName;
+            document.getElementById('current_price_display').textContent = parseFloat(currentPrice).toFixed(2) + ' {{ __("financing.sar") }}';
+            document.getElementById('new_price').value = '';
+            document.getElementById('notes').value = '';
+
+            // Clear previous errors
+            document.getElementById('new_price').classList.remove('is-invalid');
+            document.getElementById('new_price_error').textContent = '';
+
+            // Show modal
+            editPriceModal.show();
+        });
+    });
+
+    // Handle form submission
+    if (editPriceForm) {
+        editPriceForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const financingId = document.getElementById('financing_id').value;
+            const newPrice = document.getElementById('new_price').value;
+            const notes = document.getElementById('notes').value;
+
+            // Show loading state
+            submitPriceBtn.setAttribute('data-kt-indicator', 'on');
+            submitPriceBtn.disabled = true;
+
+            // Clear previous errors
+            document.getElementById('new_price').classList.remove('is-invalid');
+            document.getElementById('new_price_error').textContent = '';
+
+            // Send AJAX request
+            fetch(`/financings/${financingId}/update-price`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    new_price: newPrice,
+                    notes: notes
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading state
+                submitPriceBtn.removeAttribute('data-kt-indicator');
+                submitPriceBtn.disabled = false;
+
+                if (data.success) {
+                    // Show success message
+                    Swal.fire({
+                        text: data.message,
+                        icon: 'success',
+                        buttonsStyling: false,
+                        confirmButtonText: '{{ __("financing.ok") }}',
+                        customClass: {
+                            confirmButton: 'btn btn-primary'
+                        }
+                    }).then(() => {
+                        editPriceModal.hide();
+                        location.reload();
+                    });
+                } else {
+                    // Show error message
+                    if (data.message) {
+                        document.getElementById('new_price').classList.add('is-invalid');
+                        document.getElementById('new_price_error').textContent = data.message;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+
+                // Hide loading state
+                submitPriceBtn.removeAttribute('data-kt-indicator');
+                submitPriceBtn.disabled = false;
+
+                // Show error message
+                Swal.fire({
+                    text: '{{ __("financing.error_updating_price") }}',
+                    icon: 'error',
+                    buttonsStyling: false,
+                    confirmButtonText: '{{ __("financing.ok") }}',
+                    customClass: {
+                        confirmButton: 'btn btn-primary'
+                    }
+                });
+            });
+        });
+    }
 
     // Re-initialize KTMenu for dropdown menus
     if (typeof KTMenu !== 'undefined') {
