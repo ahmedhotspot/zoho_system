@@ -524,9 +524,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('new_price').classList.remove('is-invalid');
             document.getElementById('new_price_error').textContent = '';
 
-            // Send AJAX request
-            fetch(`/financings/${financingId}/update-price`, {
-                method: 'PUT',
+            // Send AJAX request 
+            fetch(`/zoho_system/public/financings/${financingId}/update-price`, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')

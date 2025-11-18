@@ -94,7 +94,8 @@ class FinancingController extends Controller
      */
  public function show($id)
     {
-        $financing = Financing::with(['financingType'])->findOrFail($id);
+        $financing = Financing::with(['financingType','company'])->findOrFail($id);
+     
 
         $company = Company::where('user_id', $financing->company_id)
             ->where('financing_type_id', $financing->financing_type_id)
@@ -114,6 +115,7 @@ class FinancingController extends Controller
      */
     public function updatePrice(Request $request, $id)
     {
+     
         $validated = $request->validate([
             'new_price' => 'required|numeric|min:0',
             'notes' => 'nullable|string|max:1000',

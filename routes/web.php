@@ -293,7 +293,7 @@ Route::prefix('companies')->name('companies.')->middleware(['auth'])->group(func
 Route::prefix('financings')->name('financings.')->middleware(['auth'])->group(function(){
     Route::get('/', [FinancingController::class, 'index'])->name('index')->middleware('permission:view financings');
     Route::get('/{id}', [FinancingController::class, 'show'])->name('show')->middleware('permission:view financings');
-    Route::put('/{id}/update-price', [FinancingController::class, 'updatePrice'])->name('update-price')->middleware('permission:edit financings');
+    Route::post('/{id}/update-price', [FinancingController::class, 'updatePrice'])->name('update-price')->middleware('permission:edit financings');
 });
 
 // Roles Routes
