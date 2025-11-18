@@ -15,6 +15,7 @@ class Financing extends Model
         'price',
         'company_id',
         'financing_type_id',
+        'application_uuid'
     ];
 
         protected $casts = [

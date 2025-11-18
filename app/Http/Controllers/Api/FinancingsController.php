@@ -27,6 +27,7 @@ class FinancingsController extends Controller
             'price' => $request->price,
             'company_id' => $company->user_id,
             'financing_type_id' => $company->financing_type_id,
+            'application_uuid'=>$request->application_uuid
         ]);
 
          return response('suucess',200);
