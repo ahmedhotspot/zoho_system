@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Financing;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FinancingsController extends Controller
 {
     public function add_new_financings(Request $request)
     {
+
+        Log::info('req',$request->all());
 
         $company = Company::where('user_id', $request->company_id)->first();
 
@@ -26,9 +30,9 @@ class FinancingsController extends Controller
             'application_id' => $request->application_id,
             'financingcompanies' => $request->financingcompanies,
             'price' => $request->price,
-            'company_id' => $company->user_id,
+            'company_id' => $company->id,
             'financing_type_id' => $company->financing_type_id,
-            'application_uuid'=>$request->application_uuid??null
+           
         ]);
 
          return response('suucess',200);
