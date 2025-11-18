@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Financing;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FinancingsController extends Controller
 {
@@ -32,4 +33,7 @@ class FinancingsController extends Controller
 
          return response('suucess',200);
     }
+
+
+
 }

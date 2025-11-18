@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class FinancingController extends Controller
 {
@@ -136,6 +137,12 @@ class FinancingController extends Controller
                     'message' => __('financing.price_not_changed')
                 ], 400);
             }
+
+          $response =  Http::post(env('HOTSPOT_API_URL').'/update_ammount_applications',[
+                'id'=>$financing->application_id,
+                'new_amount'=>$newPrice
+            ]);
+            Log::info('Response: ' . $response->body());
 
             // Create price history record
             FinancingPriceHistory::create([
